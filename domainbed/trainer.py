@@ -245,14 +245,14 @@ def train(test_envs, args, hparams, n_steps, checkpoint_freq, logger, writer, ta
 
             # swad
             if swad:
-                def prt_results_fn(results, avgmodel):
-                    step_str = f" [{avgmodel.start_step}-{avgmodel.end_step}]"
-                    row = misc.to_row([results[key] for key in results_keys if key in results])
-                    logger.info(row + step_str)
+                # def prt_results_fn(results, avgmodel):
+                #     step_str = f" [{avgmodel.start_step}-{avgmodel.end_step}]"
+                #     row = misc.to_row([results[key] for key in results_keys if key in results])
+                #     logger.info(row + step_str)
 
 
                 swad.update_and_evaluate(
-                    swad_algorithm, results["train_out"], results["tr_outloss"], prt_results_fn
+                    swad_algorithm, results["train_out"], results["tr_outloss"], None
                 )
 
                 if hasattr(swad, "dead_valley") and swad.dead_valley:
@@ -298,15 +298,19 @@ def train(test_envs, args, hparams, n_steps, checkpoint_freq, logger, writer, ta
             logger.warning(f"Update SWAD BN statistics for {n_steps} steps ...")
             swa_utils.update_bn(train_minibatches_iterator, swad_algorithm, n_steps)
 
-        swad_algorithm[-1] = algorithm[-1]
+        # import pdb; pdb.set_trace()
+
+        # swad_algorithm[-1] = algorithm[-1]
+        swad_algorithm.module.network[2]=algorithm.network[2]
+        swad_algorithm = swad_algorithm.module
         logger.warning("Evaluate SWAD ...")
         accuracies, summaries = evaluator.evaluate(swad_algorithm, model_type='swad')
         results = {**summaries, **accuracies}
-        start = swad_algorithm.start_step
-        end = swad_algorithm.end_step
-        step_str = f" [{start}-{end}]  (N={swad_algorithm.n_averaged})"
-        row = misc.to_row([results[key] for key in results_keys if key in results]) + step_str
-        logger.info(row)
+        # start = swad_algorithm.start_step
+        # end = swad_algorithm.end_step
+        # step_str = f" [{start}-{end}]  (N={swad_algorithm.n_averaged})"
+        # row = misc.to_row([results[key] for key in results_keys if key in results]) + step_str
+        # logger.info(row)
 
         ret["SWAD"] = results["test_in"]
         ret["SWAD (inD)"] = results[in_key]

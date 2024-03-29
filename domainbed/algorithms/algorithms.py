@@ -90,17 +90,17 @@ class Classifier(nn.Module):
 
 
 def grl_hook(coeff):
-    def fun1(grad):
-        return -coeff*grad.clone()
-    return fun1
+	def fun1(grad):
+		return -coeff*grad.clone()
+	return fun1
 
 
 def Entropy(input_):
-    bs = input_.size(0)
-    epsilon = 1e-5
-    entropy = -input_ * torch.log(input_ + epsilon)
-    entropy = torch.sum(entropy, dim=1)
-    return entropy 
+	bs = input_.size(0)
+	epsilon = 1e-5
+	entropy = -input_ * torch.log(input_ + epsilon)
+	entropy = torch.sum(entropy, dim=1)
+	return entropy 
 
 
 class GradReverse(torch.autograd.Function):
@@ -217,7 +217,7 @@ class ERM(Algorithm):
 		self.batch_size = hparams['batch_size']
 		self.checkpoint_freq = 300
 
-		self.smooth = 0.0
+		self.smooth = hparams['smooth']
 		self.disc_weight = hparams['disc_weight']
 		self.maxinfo_weight = hparams['maxinfo_weight']
 		self.ot_weight = hparams['ot_weight']
@@ -324,10 +324,11 @@ class ERM(Algorithm):
 		prototype_logits = self.network[1](self.prototype_net.prototype)
 		_, prototype_predicted_classes = torch.max(prototype_logits, 1)
 
-		
 		if self.update_count > self.checkpoint_freq:
 			self.prototype_net.update_label(prototype_predicted_classes)
+		
 			if self.smooth > 0.0:
+
 				mix_prototype, mix_label = self.prototype_net.prototype_interpolation(prototype_logits)
 				p_mix_logits = self.network[1](mix_prototype)
 				mix_loss = self.soft_criterion(p_mix_logits, mix_label)
