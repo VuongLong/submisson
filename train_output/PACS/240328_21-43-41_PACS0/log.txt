@@ -1,0 +1,83 @@
+[37m[36mINFO[0m[0m 03/28 21:43:41 | Command :: train_all.py PACS0 --dataset PACS --deterministic --trial_seed 0 --checkpoint_freq 100 --data_dir /home/long/data/DomainBed --algorithm ERM --pcl_loss
+Environment:
+	Python: 3.7.9
+	PyTorch: 1.13.1+cu117
+	Torchvision: 0.14.1+cu117
+	CUDA: 11.7
+	CUDNN: 8500
+	NumPy: 1.21.6
+	PIL: 9.5.0
+Args:
+	algorithm: ERM
+	checkpoint_freq: 100
+	configs: []
+	data_dir: /home/long/data/DomainBed
+	dataset: PACS
+	debug: False
+	deterministic: True
+	evalmode: fast
+	holdout_fraction: 0.2
+	model_save: None
+	name: PACS0
+	no_swad: False
+	out_dir: train_output/PACS/240328_21-43-41_PACS0
+	out_root: train_output/PACS
+	pcl_loss: True
+	prebuild_loader: False
+	pretrained: False
+	run_name: 240328_21-43-41_PACS0
+	seed: 0
+	show: False
+	steps: None
+	tb_freq: 10
+	test_envs: None
+	trial_seed: 0
+	unique_name: 240328_21-43-41_PACS0
+	work_dir: .
+HParams:
+	data_augmentation: True
+	val_augment: False
+	resnet18: False
+	resnet_dropout: 0.0
+	class_balanced: False
+	optimizer: adam
+	freeze_bn: True
+	pretrained: False
+	lr: 5e-05
+	batch_size: 32
+	weight_decay: 0.0
+	swad: LossValley
+	swad_kwargs: 
+	  n_converge: 3
+	  n_tolerance: 6
+	  tolerance_ratio: 0.3
+	test_batchsize: 128
+	indomain_test: False
+	pcl_loss: True
+Dataset:
+	[PACS] #envs=4, #classes=7
+	env0: art_painting (#2048)
+	env1: cartoon (#2344)
+	env2: photo (#1670)
+	env3: sketch (#3929)
+
+[37m[36mINFO[0m[0m 03/28 21:43:41 | n_steps = 5001
+[37m[36mINFO[0m[0m 03/28 21:43:41 | checkpoint_freq = 100
+[37m[36mINFO[0m[0m 03/28 21:43:41 | n_steps is updated to 5001 => 5001 for checkpointing
+[37m[36mINFO[0m[0m 03/28 21:43:41 | Target test envs = [[0], [1], [2], [3]]
+[37m[36mINFO[0m[0m 03/28 21:43:41 | 
+[37m[36mINFO[0m[0m 03/28 21:43:41 | Testenv name escaping te_art_painting -> te_art_painting
+[37m[36mINFO[0m[0m 03/28 21:43:41 | Test envs = [0], name = te_art_painting
+[37m[36mINFO[0m[0m 03/28 21:43:41 | Batch sizes for each domain: [0, 32, 32, 32] (total=96)
+[37m[36mINFO[0m[0m 03/28 21:43:41 | steps-per-epoch for each domain: 58.62, 41.75, 98.25 -> min = 41.75
+[37m[36mINFO[0m[0m 03/28 21:43:42 | # of params = 24586682
+[37m[36mINFO[0m[0m 03/28 21:43:49 | test_in     test_out    train_in    train_out   tr_outloss  env0_in     env0_out    env1_out    env2_out    env3_out    step        epoch       loss        step_time   eval_time  
+[37m[36mINFO[0m[0m 03/28 21:43:49 | 0.187309    0.176039    0.000000    0.155170    80.738396   0.187309    0.176039    0.149573    0.119760    0.196178    0           0.000000    71.764717   1.277642    5.692147   
+[37m[36mINFO[0m[0m 03/28 21:44:15 | 0.131788    0.112469    0.000000    0.219091    1.897704    0.131788    0.112469    0.147436    0.215569    0.294268    100         2.395210    49.709455   0.189678    5.864215   
+[37m[36mINFO[0m[0m 03/28 21:44:41 | 0.270287    0.256724    0.000000    0.357722    1.714618    0.270287    0.256724    0.382479    0.386228    0.304459    200         4.790419    5.203542    0.190728    5.776888   
+[37m[36mINFO[0m[0m 03/28 21:45:07 | 0.273948    0.246944    0.000000    0.393075    1.541062    0.273948    0.246944    0.433761    0.386228    0.359236    300         7.185629    4.739577    0.190904    5.871474   
+[37m[36mINFO[0m[0m 03/28 21:45:34 | 0.253813    0.227384    0.000000    0.412788    1.489940    0.253813    0.227384    0.450855    0.446108    0.341401    400         9.580838    4.801172    0.191867    5.978463   
+[37m[36mINFO[0m[0m 03/28 21:46:00 | 0.222697    0.188264    0.000000    0.431804    1.494685    0.222697    0.188264    0.457265    0.461078    0.377070    500         11.976048   4.592609    0.191989    5.918271   
+[37m[36mINFO[0m[0m 03/28 21:46:27 | 0.247102    0.222494    0.000000    0.468734    1.377826    0.247102    0.222494    0.470085    0.502994    0.433121    600         14.371257   4.355027    0.192030    5.912454   
+[37m[36mINFO[0m[0m 03/28 21:46:53 | 0.262355    0.239609    0.000000    0.456459    1.404201    0.262355    0.239609    0.461538    0.526946    0.380892    700         16.766467   4.105768    0.191813    6.050911   
+[37m[36mINFO[0m[0m 03/28 21:47:20 | 0.241611    0.188264    0.000000    0.520578    1.274750    0.241611    0.188264    0.480769    0.568862    0.512102    800         19.161677   3.965960    0.192244    6.013879   

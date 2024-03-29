@@ -1,0 +1,79 @@
+[37m[36mINFO[0m[0m 02/02 04:56:46 | Command :: train_all.py PACS0 --dataset PACS --deterministic --trial_seed 2 --checkpoint_freq 300 --data_dir /home/long/data/DomainBed --algorithm ERM --run_name Scratch_{ERM}_0.1PCLNormAfterScaleNumClass_trail{2}_1-0 --pcl_loss
+Environment:
+	Python: 3.7.9
+	PyTorch: 1.13.1+cu117
+	Torchvision: 0.14.1+cu117
+	CUDA: 11.7
+	CUDNN: 8500
+	NumPy: 1.21.6
+	PIL: 9.5.0
+Args:
+	algorithm: ERM
+	checkpoint_freq: 300
+	configs: []
+	data_dir: /home/long/data/DomainBed
+	dataset: PACS
+	debug: False
+	deterministic: True
+	evalmode: fast
+	holdout_fraction: 0.2
+	model_save: None
+	name: PACS0
+	out_dir: train_output/PACS/Scratch_{ERM}_0.1PCLNormAfterScaleNumClass_trail{2}_1-0
+	out_root: train_output/PACS
+	pcl_loss: True
+	prebuild_loader: False
+	run_name: Scratch_{ERM}_0.1PCLNormAfterScaleNumClass_trail{2}_1-0
+	seed: 0
+	show: False
+	steps: None
+	tb_freq: 10
+	test_envs: None
+	trial_seed: 2
+	unique_name: 240202_04-56-46_PACS0
+	work_dir: .
+HParams:
+	data_augmentation: True
+	val_augment: False
+	resnet18: False
+	resnet_dropout: 0.0
+	class_balanced: False
+	optimizer: adam
+	freeze_bn: True
+	pretrained: False
+	lr: 5e-05
+	batch_size: 32
+	weight_decay: 0.0
+	swad: LossValley
+	swad_kwargs: 
+	  n_converge: 3
+	  n_tolerance: 6
+	  tolerance_ratio: 0.3
+	test_batchsize: 128
+	indomain_test: False
+	pcl_loss: True
+Dataset:
+	[PACS] #envs=4, #classes=7
+	env0: art_painting (#2048)
+	env1: cartoon (#2344)
+	env2: photo (#1670)
+	env3: sketch (#3929)
+
+[37m[36mINFO[0m[0m 02/02 04:56:46 | n_steps = 5001
+[37m[36mINFO[0m[0m 02/02 04:56:46 | checkpoint_freq = 300
+[37m[36mINFO[0m[0m 02/02 04:56:46 | n_steps is updated to 5001 => 4801 for checkpointing
+[37m[36mINFO[0m[0m 02/02 04:56:46 | Target test envs = [[0], [1], [2], [3]]
+[37m[36mINFO[0m[0m 02/02 04:56:46 | 
+[37m[36mINFO[0m[0m 02/02 04:56:46 | Testenv name escaping te_art_painting -> te_art_painting
+[37m[36mINFO[0m[0m 02/02 04:56:46 | Test envs = [0], name = te_art_painting
+[37m[36mINFO[0m[0m 02/02 04:56:46 | Batch sizes for each domain: [0, 32, 32, 32] (total=96)
+[37m[36mINFO[0m[0m 02/02 04:56:46 | steps-per-epoch for each domain: 58.62, 41.75, 98.25 -> min = 41.75
+[37m[36mINFO[0m[0m 02/02 04:56:47 | # of params = 23522375
+[37m[36mINFO[0m[0m 02/02 04:56:55 | test_in     test_out    train_in    train_out   tr_outloss  env0_in     env0_out    env1_out    env2_out    env3_out    step        epoch       loss        step_time   eval_time  
+[37m[36mINFO[0m[0m 02/02 04:56:55 | 0.143380    0.166259    0.000000    0.183244    25.141348   0.143380    0.166259    0.205128    0.149701    0.194904    0           0.000000    32.179703   1.329823    6.208902   
+[37m[36mINFO[0m[0m 02/02 04:58:00 | 0.228188    0.220049    0.000000    0.467866    1.430616    0.228188    0.220049    0.478632    0.488024    0.436943    300         7.185629    6.900628    0.184187    6.603013   
+[37m[36mINFO[0m[0m 02/02 04:59:06 | 0.221477    0.217604    0.000000    0.527414    1.261626    0.221477    0.217604    0.508547    0.502994    0.570701    600         14.371257   4.518364    0.184604    6.497497   
+[37m[36mINFO[0m[0m 02/02 05:00:12 | 0.272727    0.256724    0.000000    0.577214    1.075397    0.272727    0.256724    0.544872    0.637725    0.549045    900         21.556886   3.862536    0.185484    6.595784   
+[37m[36mINFO[0m[0m 02/02 05:01:18 | 0.297743    0.237164    0.000000    0.654597    0.957059    0.297743    0.237164    0.645299    0.649701    0.668790    1200        28.742515   3.418365    0.186003    6.672728   
+[37m[36mINFO[0m[0m 02/02 05:02:25 | 0.287980    0.286064    0.000000    0.669237    0.891627    0.287980    0.286064    0.670940    0.652695    0.684076    1500        35.928144   2.963860    0.185807    6.843096   
+[37m[36mINFO[0m[0m 02/02 05:03:31 | 0.302013    0.305623    0.000000    0.716251    0.788592    0.302013    0.305623    0.707265    0.688623    0.752866    1800        43.113772   2.638745    0.185842    6.782992   

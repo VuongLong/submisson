@@ -1,0 +1,224 @@
+[37m[36mINFO[0m[0m 02/02 05:26:09 | Command :: train_all.py PACS0 --dataset PACS --deterministic --trial_seed 0 --checkpoint_freq 300 --data_dir /home/long/data/DomainBed --algorithm IIB --pcl_loss --run_name Scratch_{IIB}_0.1PCLNormAfterScale7AndNumClass_trail0
+Environment:
+	Python: 3.7.9
+	PyTorch: 1.13.1+cu117
+	Torchvision: 0.14.1+cu117
+	CUDA: 11.7
+	CUDNN: 8500
+	NumPy: 1.21.6
+	PIL: 9.5.0
+Args:
+	algorithm: IIB
+	checkpoint_freq: 300
+	configs: []
+	data_dir: /home/long/data/DomainBed
+	dataset: PACS
+	debug: False
+	deterministic: True
+	evalmode: fast
+	holdout_fraction: 0.2
+	model_save: None
+	name: PACS0
+	out_dir: train_output/PACS/Scratch_{IIB}_0.1PCLNormAfterScale7AndNumClass_trail0
+	out_root: train_output/PACS
+	pcl_loss: True
+	prebuild_loader: False
+	run_name: Scratch_{IIB}_0.1PCLNormAfterScale7AndNumClass_trail0
+	seed: 0
+	show: False
+	steps: None
+	tb_freq: 10
+	test_envs: None
+	trial_seed: 0
+	unique_name: 240202_05-26-09_PACS0
+	work_dir: .
+HParams:
+	data_augmentation: True
+	val_augment: False
+	resnet18: False
+	resnet_dropout: 0.0
+	class_balanced: False
+	optimizer: adam
+	freeze_bn: True
+	pretrained: False
+	lr: 5e-05
+	batch_size: 32
+	weight_decay: 0.0
+	lambda_beta: 0.0001
+	lambda_inv_risks: 10
+	enable_bn: True
+	swad: LossValley
+	swad_kwargs: 
+	  n_converge: 3
+	  n_tolerance: 6
+	  tolerance_ratio: 0.3
+	test_batchsize: 128
+	indomain_test: False
+	pcl_loss: True
+Dataset:
+	[PACS] #envs=4, #classes=7
+	env0: art_painting (#2048)
+	env1: cartoon (#2344)
+	env2: photo (#1670)
+	env3: sketch (#3929)
+
+[37m[36mINFO[0m[0m 02/02 05:26:09 | n_steps = 5001
+[37m[36mINFO[0m[0m 02/02 05:26:09 | checkpoint_freq = 300
+[37m[36mINFO[0m[0m 02/02 05:26:09 | n_steps is updated to 5001 => 4801 for checkpointing
+[37m[36mINFO[0m[0m 02/02 05:26:09 | Target test envs = [[0], [1], [2], [3]]
+[37m[36mINFO[0m[0m 02/02 05:26:09 | 
+[37m[36mINFO[0m[0m 02/02 05:26:09 | Testenv name escaping te_art_painting -> te_art_painting
+[37m[36mINFO[0m[0m 02/02 05:26:09 | Test envs = [0], name = te_art_painting
+[37m[36mINFO[0m[0m 02/02 05:26:09 | Batch sizes for each domain: [0, 32, 32, 32] (total=96)
+[37m[36mINFO[0m[0m 02/02 05:26:09 | steps-per-epoch for each domain: 58.62, 41.75, 98.25 -> min = 41.75
+[37m[36mINFO[0m[0m 02/02 05:28:33 | Command :: train_all.py PACS0 --dataset PACS --deterministic --trial_seed 0 --checkpoint_freq 300 --data_dir /home/long/data/DomainBed --algorithm IIB --pcl_loss --run_name Scratch_{IIB}_0.1PCLNormAfterScale7AndNumClass_trail0
+Environment:
+	Python: 3.7.9
+	PyTorch: 1.13.1+cu117
+	Torchvision: 0.14.1+cu117
+	CUDA: 11.7
+	CUDNN: 8500
+	NumPy: 1.21.6
+	PIL: 9.5.0
+Args:
+	algorithm: IIB
+	checkpoint_freq: 300
+	configs: []
+	data_dir: /home/long/data/DomainBed
+	dataset: PACS
+	debug: False
+	deterministic: True
+	evalmode: fast
+	holdout_fraction: 0.2
+	model_save: None
+	name: PACS0
+	out_dir: train_output/PACS/Scratch_{IIB}_0.1PCLNormAfterScale7AndNumClass_trail0
+	out_root: train_output/PACS
+	pcl_loss: True
+	prebuild_loader: False
+	run_name: Scratch_{IIB}_0.1PCLNormAfterScale7AndNumClass_trail0
+	seed: 0
+	show: False
+	steps: None
+	tb_freq: 10
+	test_envs: None
+	trial_seed: 0
+	unique_name: 240202_05-28-33_PACS0
+	work_dir: .
+HParams:
+	data_augmentation: True
+	val_augment: False
+	resnet18: False
+	resnet_dropout: 0.0
+	class_balanced: False
+	optimizer: adam
+	freeze_bn: True
+	pretrained: False
+	lr: 5e-05
+	batch_size: 32
+	weight_decay: 0.0
+	lambda_beta: 0.0001
+	lambda_inv_risks: 10
+	enable_bn: True
+	swad: LossValley
+	swad_kwargs: 
+	  n_converge: 3
+	  n_tolerance: 6
+	  tolerance_ratio: 0.3
+	test_batchsize: 128
+	indomain_test: False
+	pcl_loss: True
+Dataset:
+	[PACS] #envs=4, #classes=7
+	env0: art_painting (#2048)
+	env1: cartoon (#2344)
+	env2: photo (#1670)
+	env3: sketch (#3929)
+
+[37m[36mINFO[0m[0m 02/02 05:28:33 | n_steps = 5001
+[37m[36mINFO[0m[0m 02/02 05:28:33 | checkpoint_freq = 300
+[37m[36mINFO[0m[0m 02/02 05:28:33 | n_steps is updated to 5001 => 4801 for checkpointing
+[37m[36mINFO[0m[0m 02/02 05:28:33 | Target test envs = [[0], [1], [2], [3]]
+[37m[36mINFO[0m[0m 02/02 05:28:33 | 
+[37m[36mINFO[0m[0m 02/02 05:28:33 | Testenv name escaping te_art_painting -> te_art_painting
+[37m[36mINFO[0m[0m 02/02 05:28:33 | Test envs = [0], name = te_art_painting
+[37m[36mINFO[0m[0m 02/02 05:28:33 | Batch sizes for each domain: [0, 32, 32, 32] (total=96)
+[37m[36mINFO[0m[0m 02/02 05:28:33 | steps-per-epoch for each domain: 58.62, 41.75, 98.25 -> min = 41.75
+[37m[36mINFO[0m[0m 02/02 05:28:34 | # of params = 40344668
+[37m[36mINFO[0m[0m 02/02 05:28:49 | Command :: train_all.py PACS0 --dataset PACS --deterministic --trial_seed 0 --checkpoint_freq 300 --data_dir /home/long/data/DomainBed --algorithm IIB --pcl_loss --run_name Scratch_{IIB}_0.1PCLNormAfterScale7AndNumClass_trail0
+Environment:
+	Python: 3.7.9
+	PyTorch: 1.13.1+cu117
+	Torchvision: 0.14.1+cu117
+	CUDA: 11.7
+	CUDNN: 8500
+	NumPy: 1.21.6
+	PIL: 9.5.0
+Args:
+	algorithm: IIB
+	checkpoint_freq: 300
+	configs: []
+	data_dir: /home/long/data/DomainBed
+	dataset: PACS
+	debug: False
+	deterministic: True
+	evalmode: fast
+	holdout_fraction: 0.2
+	model_save: None
+	name: PACS0
+	out_dir: train_output/PACS/Scratch_{IIB}_0.1PCLNormAfterScale7AndNumClass_trail0
+	out_root: train_output/PACS
+	pcl_loss: True
+	prebuild_loader: False
+	run_name: Scratch_{IIB}_0.1PCLNormAfterScale7AndNumClass_trail0
+	seed: 0
+	show: False
+	steps: None
+	tb_freq: 10
+	test_envs: None
+	trial_seed: 0
+	unique_name: 240202_05-28-49_PACS0
+	work_dir: .
+HParams:
+	data_augmentation: True
+	val_augment: False
+	resnet18: False
+	resnet_dropout: 0.0
+	class_balanced: False
+	optimizer: adam
+	freeze_bn: True
+	pretrained: False
+	lr: 5e-05
+	batch_size: 32
+	weight_decay: 0.0
+	lambda_beta: 0.0001
+	lambda_inv_risks: 10
+	enable_bn: True
+	swad: LossValley
+	swad_kwargs: 
+	  n_converge: 3
+	  n_tolerance: 6
+	  tolerance_ratio: 0.3
+	test_batchsize: 128
+	indomain_test: False
+	pcl_loss: True
+Dataset:
+	[PACS] #envs=4, #classes=7
+	env0: art_painting (#2048)
+	env1: cartoon (#2344)
+	env2: photo (#1670)
+	env3: sketch (#3929)
+
+[37m[36mINFO[0m[0m 02/02 05:28:49 | n_steps = 5001
+[37m[36mINFO[0m[0m 02/02 05:28:49 | checkpoint_freq = 300
+[37m[36mINFO[0m[0m 02/02 05:28:49 | n_steps is updated to 5001 => 4801 for checkpointing
+[37m[36mINFO[0m[0m 02/02 05:28:49 | Target test envs = [[0], [1], [2], [3]]
+[37m[36mINFO[0m[0m 02/02 05:28:49 | 
+[37m[36mINFO[0m[0m 02/02 05:28:49 | Testenv name escaping te_art_painting -> te_art_painting
+[37m[36mINFO[0m[0m 02/02 05:28:49 | Test envs = [0], name = te_art_painting
+[37m[36mINFO[0m[0m 02/02 05:28:49 | Batch sizes for each domain: [0, 32, 32, 32] (total=96)
+[37m[36mINFO[0m[0m 02/02 05:28:49 | steps-per-epoch for each domain: 58.62, 41.75, 98.25 -> min = 41.75
+[37m[36mINFO[0m[0m 02/02 05:28:50 | # of params = 40344668
+[37m[36mINFO[0m[0m 02/02 05:28:58 | test_in     test_out    train_in    train_out   tr_outloss  env0_in     env0_out    env1_out    env2_out    env3_out    step        epoch       loss_ib     loss_env    loss_inv    loss_all    step_time   eval_time  
+[37m[36mINFO[0m[0m 02/02 05:28:58 | 0.139109    0.139364    0.000000    0.143938    2.999616    0.139109    0.139364    0.149573    0.098802    0.183439    0           0.000000    24300.3046  2.113590    2.040392    9.582122    1.308149    5.833504   
+[37m[36mINFO[0m[0m 02/02 05:30:03 | 0.207444    0.195599    0.000000    0.340880    1.825154    0.207444    0.195599    0.365385    0.461078    0.196178    300         7.185629    4451.36072  1.732194    1.729130    4.185330    0.185350    6.080529   

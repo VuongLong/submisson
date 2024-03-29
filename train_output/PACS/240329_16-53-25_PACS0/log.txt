@@ -1,0 +1,9 @@
+[37m[36mINFO[0m[0m 03/29 16:53:25 | Command :: train_all.py PACS0 --dataset PACS --deterministic --trial_seed 0 --checkpoint_freq 300 --data_dir /home/long/data/DomainBed --algorithm ERM
+Environment:
+	Python: 3.7.9
+	PyTorch: 1.13.1+cu117
+	Torchvision: 0.14.1+cu117
+	CUDA: 11.7
+	CUDNN: 8500
+	NumPy: 1.21.6
+	PIL: 9.5.0

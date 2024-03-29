@@ -1,0 +1,75 @@
+[37m[36mINFO[0m[0m 03/29 02:43:51 | Command :: train_all.py PACS0 --dataset PACS --deterministic --trial_seed 1 --checkpoint_freq 300 --data_dir /home/long/data/DomainBed --algorithm ERM --pretrained
+Environment:
+	Python: 3.7.9
+	PyTorch: 1.13.1+cu117
+	Torchvision: 0.14.1+cu117
+	CUDA: 11.7
+	CUDNN: 8500
+	NumPy: 1.21.6
+	PIL: 9.5.0
+Args:
+	algorithm: ERM
+	checkpoint_freq: 300
+	configs: []
+	data_dir: /home/long/data/DomainBed
+	dataset: PACS
+	debug: False
+	deterministic: True
+	evalmode: fast
+	holdout_fraction: 0.2
+	model_save: None
+	name: PACS0
+	no_swad: False
+	out_dir: train_output/PACS/240329_02-43-51_PACS0
+	out_root: train_output/PACS
+	pcl_loss: False
+	prebuild_loader: False
+	pretrained: True
+	run_name: 240329_02-43-51_PACS0
+	seed: 0
+	show: False
+	steps: None
+	tb_freq: 10
+	test_envs: None
+	trial_seed: 1
+	unique_name: 240329_02-43-51_PACS0
+	work_dir: .
+HParams:
+	data_augmentation: True
+	val_augment: False
+	resnet18: False
+	resnet_dropout: 0.0
+	class_balanced: False
+	optimizer: adam
+	freeze_bn: True
+	pretrained: True
+	lr: 5e-05
+	batch_size: 32
+	weight_decay: 0.0
+	swad: LossValley
+	swad_kwargs: 
+	  n_converge: 3
+	  n_tolerance: 6
+	  tolerance_ratio: 0.3
+	test_batchsize: 128
+	indomain_test: False
+	pcl_loss: False
+Dataset:
+	[PACS] #envs=4, #classes=7
+	env0: art_painting (#2048)
+	env1: cartoon (#2344)
+	env2: photo (#1670)
+	env3: sketch (#3929)
+
+[37m[36mINFO[0m[0m 03/29 02:43:51 | n_steps = 5001
+[37m[36mINFO[0m[0m 03/29 02:43:51 | checkpoint_freq = 300
+[37m[36mINFO[0m[0m 03/29 02:43:51 | n_steps is updated to 5001 => 4801 for checkpointing
+[37m[36mINFO[0m[0m 03/29 02:43:51 | Target test envs = [[0], [1], [2], [3]]
+[37m[36mINFO[0m[0m 03/29 02:43:51 | 
+[37m[36mINFO[0m[0m 03/29 02:43:51 | Testenv name escaping te_art_painting -> te_art_painting
+[37m[36mINFO[0m[0m 03/29 02:43:51 | Test envs = [0], name = te_art_painting
+[37m[36mINFO[0m[0m 03/29 02:43:51 | Batch sizes for each domain: [0, 32, 32, 32] (total=96)
+[37m[36mINFO[0m[0m 03/29 02:43:51 | steps-per-epoch for each domain: 58.62, 41.75, 98.25 -> min = 41.75
+[37m[36mINFO[0m[0m 03/29 02:43:52 | # of params = 24586682
+[37m[36mINFO[0m[0m 03/29 02:43:59 | test_in     test_out    train_in    train_out   tr_outloss  env0_in     env0_out    env1_out    env2_out    env3_out    step        epoch       loss        step_time   eval_time  
+[37m[36mINFO[0m[0m 03/29 02:43:59 | 0.178157    0.212714    0.000000    0.215786    1.849227    0.178157    0.212714    0.254274    0.218563    0.174522    0           0.000000    3.979812    1.257124    5.896282   

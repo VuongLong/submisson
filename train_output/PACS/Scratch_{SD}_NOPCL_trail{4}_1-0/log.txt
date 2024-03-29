@@ -1,0 +1,588 @@
+[37m[36mINFO[0m[0m 03/23 15:33:29 | Command :: train_all.py PACS0 --dataset PACS --deterministic --trial_seed 4 --checkpoint_freq 300 --data_dir /home/long/data/DomainBed --algorithm SD --run_name Scratch_{SD}_NOPCL_trail{4}_1-0
+Environment:
+	Python: 3.7.9
+	PyTorch: 1.13.1+cu117
+	Torchvision: 0.14.1+cu117
+	CUDA: 11.7
+	CUDNN: 8500
+	NumPy: 1.21.6
+	PIL: 9.5.0
+Args:
+	algorithm: SD
+	checkpoint_freq: 300
+	configs: []
+	data_dir: /home/long/data/DomainBed
+	dataset: PACS
+	debug: False
+	deterministic: True
+	evalmode: fast
+	holdout_fraction: 0.2
+	model_save: None
+	name: PACS0
+	no_swad: False
+	out_dir: train_output/PACS/Scratch_{SD}_NOPCL_trail{4}_1-0
+	out_root: train_output/PACS
+	pcl_loss: False
+	prebuild_loader: False
+	pretrained: False
+	run_name: Scratch_{SD}_NOPCL_trail{4}_1-0
+	seed: 0
+	show: False
+	steps: None
+	tb_freq: 10
+	test_envs: None
+	trial_seed: 4
+	unique_name: 240323_15-33-29_PACS0
+	work_dir: .
+HParams:
+	data_augmentation: True
+	val_augment: False
+	resnet18: False
+	resnet_dropout: 0.0
+	class_balanced: False
+	optimizer: adam
+	freeze_bn: True
+	pretrained: False
+	lr: 5e-05
+	batch_size: 32
+	weight_decay: 0.0
+	swad: LossValley
+	swad_kwargs: 
+	  n_converge: 3
+	  n_tolerance: 6
+	  tolerance_ratio: 0.3
+	test_batchsize: 128
+	indomain_test: False
+	pcl_loss: False
+Dataset:
+	[PACS] #envs=4, #classes=7
+	env0: art_painting (#2048)
+	env1: cartoon (#2344)
+	env2: photo (#1670)
+	env3: sketch (#3929)
+
+[37m[36mINFO[0m[0m 03/23 15:33:29 | n_steps = 5001
+[37m[36mINFO[0m[0m 03/23 15:33:29 | checkpoint_freq = 300
+[37m[36mINFO[0m[0m 03/23 15:33:29 | n_steps is updated to 5001 => 4801 for checkpointing
+[37m[36mINFO[0m[0m 03/23 15:33:29 | Target test envs = [[0], [1], [2], [3]]
+[37m[36mINFO[0m[0m 03/23 15:33:29 | 
+[37m[36mINFO[0m[0m 03/23 15:33:29 | Testenv name escaping te_art_painting -> te_art_painting
+[37m[36mINFO[0m[0m 03/23 15:33:29 | Test envs = [0], name = te_art_painting
+[37m[36mINFO[0m[0m 03/23 15:33:29 | Batch sizes for each domain: [0, 32, 32, 32] (total=96)
+[37m[36mINFO[0m[0m 03/23 15:33:29 | steps-per-epoch for each domain: 58.62, 41.75, 98.25 -> min = 41.75
+[37m[36mINFO[0m[0m 03/23 15:37:03 | Command :: train_all.py PACS0 --dataset PACS --deterministic --trial_seed 4 --checkpoint_freq 300 --data_dir /home/long/data/DomainBed --algorithm SD --run_name Scratch_{SD}_NOPCL_trail{4}_1-0
+Environment:
+	Python: 3.7.9
+	PyTorch: 1.13.1+cu117
+	Torchvision: 0.14.1+cu117
+	CUDA: 11.7
+	CUDNN: 8500
+	NumPy: 1.21.6
+	PIL: 9.5.0
+Args:
+	algorithm: SD
+	checkpoint_freq: 300
+	configs: []
+	data_dir: /home/long/data/DomainBed
+	dataset: PACS
+	debug: False
+	deterministic: True
+	evalmode: fast
+	holdout_fraction: 0.2
+	model_save: None
+	name: PACS0
+	no_swad: False
+	out_dir: train_output/PACS/Scratch_{SD}_NOPCL_trail{4}_1-0
+	out_root: train_output/PACS
+	pcl_loss: False
+	prebuild_loader: False
+	pretrained: False
+	run_name: Scratch_{SD}_NOPCL_trail{4}_1-0
+	seed: 0
+	show: False
+	steps: None
+	tb_freq: 10
+	test_envs: None
+	trial_seed: 4
+	unique_name: 240323_15-37-03_PACS0
+	work_dir: .
+HParams:
+	data_augmentation: True
+	val_augment: False
+	resnet18: False
+	resnet_dropout: 0.0
+	class_balanced: False
+	optimizer: adam
+	freeze_bn: True
+	pretrained: False
+	lr: 5e-05
+	batch_size: 32
+	weight_decay: 0.0
+	swad: LossValley
+	swad_kwargs: 
+	  n_converge: 3
+	  n_tolerance: 6
+	  tolerance_ratio: 0.3
+	test_batchsize: 128
+	indomain_test: False
+	pcl_loss: False
+Dataset:
+	[PACS] #envs=4, #classes=7
+	env0: art_painting (#2048)
+	env1: cartoon (#2344)
+	env2: photo (#1670)
+	env3: sketch (#3929)
+
+[37m[36mINFO[0m[0m 03/23 15:37:03 | n_steps = 5001
+[37m[36mINFO[0m[0m 03/23 15:37:03 | checkpoint_freq = 300
+[37m[36mINFO[0m[0m 03/23 15:37:03 | n_steps is updated to 5001 => 4801 for checkpointing
+[37m[36mINFO[0m[0m 03/23 15:37:03 | Target test envs = [[0], [1], [2], [3]]
+[37m[36mINFO[0m[0m 03/23 15:37:03 | 
+[37m[36mINFO[0m[0m 03/23 15:37:03 | Testenv name escaping te_art_painting -> te_art_painting
+[37m[36mINFO[0m[0m 03/23 15:37:03 | Test envs = [0], name = te_art_painting
+[37m[36mINFO[0m[0m 03/23 15:37:03 | Batch sizes for each domain: [0, 32, 32, 32] (total=96)
+[37m[36mINFO[0m[0m 03/23 15:37:03 | steps-per-epoch for each domain: 58.62, 41.75, 98.25 -> min = 41.75
+[37m[36mINFO[0m[0m 03/23 15:39:03 | Command :: train_all.py PACS0 --dataset PACS --deterministic --trial_seed 4 --checkpoint_freq 300 --data_dir /home/long/data/DomainBed --algorithm SD --run_name Scratch_{SD}_NOPCL_trail{4}_1-0
+Environment:
+	Python: 3.7.9
+	PyTorch: 1.13.1+cu117
+	Torchvision: 0.14.1+cu117
+	CUDA: 11.7
+	CUDNN: 8500
+	NumPy: 1.21.6
+	PIL: 9.5.0
+Args:
+	algorithm: SD
+	checkpoint_freq: 300
+	configs: []
+	data_dir: /home/long/data/DomainBed
+	dataset: PACS
+	debug: False
+	deterministic: True
+	evalmode: fast
+	holdout_fraction: 0.2
+	model_save: None
+	name: PACS0
+	no_swad: False
+	out_dir: train_output/PACS/Scratch_{SD}_NOPCL_trail{4}_1-0
+	out_root: train_output/PACS
+	pcl_loss: False
+	prebuild_loader: False
+	pretrained: False
+	run_name: Scratch_{SD}_NOPCL_trail{4}_1-0
+	seed: 0
+	show: False
+	steps: None
+	tb_freq: 10
+	test_envs: None
+	trial_seed: 4
+	unique_name: 240323_15-39-03_PACS0
+	work_dir: .
+HParams:
+	data_augmentation: True
+	val_augment: False
+	resnet18: False
+	resnet_dropout: 0.0
+	class_balanced: False
+	optimizer: adam
+	freeze_bn: True
+	pretrained: False
+	lr: 5e-05
+	batch_size: 32
+	weight_decay: 0.0
+	swad: LossValley
+	swad_kwargs: 
+	  n_converge: 3
+	  n_tolerance: 6
+	  tolerance_ratio: 0.3
+	test_batchsize: 128
+	indomain_test: False
+	pcl_loss: False
+Dataset:
+	[PACS] #envs=4, #classes=7
+	env0: art_painting (#2048)
+	env1: cartoon (#2344)
+	env2: photo (#1670)
+	env3: sketch (#3929)
+
+[37m[36mINFO[0m[0m 03/23 15:39:03 | n_steps = 5001
+[37m[36mINFO[0m[0m 03/23 15:39:03 | checkpoint_freq = 300
+[37m[36mINFO[0m[0m 03/23 15:39:03 | n_steps is updated to 5001 => 4801 for checkpointing
+[37m[36mINFO[0m[0m 03/23 15:39:03 | Target test envs = [[0], [1], [2], [3]]
+[37m[36mINFO[0m[0m 03/23 15:39:03 | 
+[37m[36mINFO[0m[0m 03/23 15:39:03 | Testenv name escaping te_art_painting -> te_art_painting
+[37m[36mINFO[0m[0m 03/23 15:39:03 | Test envs = [0], name = te_art_painting
+[37m[36mINFO[0m[0m 03/23 15:39:03 | Batch sizes for each domain: [0, 32, 32, 32] (total=96)
+[37m[36mINFO[0m[0m 03/23 15:39:03 | steps-per-epoch for each domain: 58.62, 41.75, 98.25 -> min = 41.75
+[37m[36mINFO[0m[0m 03/23 15:43:01 | Command :: train_all.py PACS0 --dataset PACS --deterministic --trial_seed 4 --checkpoint_freq 300 --data_dir /home/long/data/DomainBed --algorithm SD --run_name Scratch_{SD}_NOPCL_trail{4}_1-0
+Environment:
+	Python: 3.7.9
+	PyTorch: 1.13.1+cu117
+	Torchvision: 0.14.1+cu117
+	CUDA: 11.7
+	CUDNN: 8500
+	NumPy: 1.21.6
+	PIL: 9.5.0
+Args:
+	algorithm: SD
+	checkpoint_freq: 300
+	configs: []
+	data_dir: /home/long/data/DomainBed
+	dataset: PACS
+	debug: False
+	deterministic: True
+	evalmode: fast
+	holdout_fraction: 0.2
+	model_save: None
+	name: PACS0
+	no_swad: False
+	out_dir: train_output/PACS/Scratch_{SD}_NOPCL_trail{4}_1-0
+	out_root: train_output/PACS
+	pcl_loss: False
+	prebuild_loader: False
+	pretrained: False
+	run_name: Scratch_{SD}_NOPCL_trail{4}_1-0
+	seed: 0
+	show: False
+	steps: None
+	tb_freq: 10
+	test_envs: None
+	trial_seed: 4
+	unique_name: 240323_15-43-01_PACS0
+	work_dir: .
+HParams:
+	data_augmentation: True
+	val_augment: False
+	resnet18: False
+	resnet_dropout: 0.0
+	class_balanced: False
+	optimizer: adam
+	freeze_bn: True
+	pretrained: False
+	lr: 5e-05
+	batch_size: 32
+	weight_decay: 0.0
+	sd_reg: 0.1
+	swad: LossValley
+	swad_kwargs: 
+	  n_converge: 3
+	  n_tolerance: 6
+	  tolerance_ratio: 0.3
+	test_batchsize: 128
+	indomain_test: False
+	pcl_loss: False
+Dataset:
+	[PACS] #envs=4, #classes=7
+	env0: art_painting (#2048)
+	env1: cartoon (#2344)
+	env2: photo (#1670)
+	env3: sketch (#3929)
+
+[37m[36mINFO[0m[0m 03/23 15:43:01 | n_steps = 5001
+[37m[36mINFO[0m[0m 03/23 15:43:01 | checkpoint_freq = 300
+[37m[36mINFO[0m[0m 03/23 15:43:01 | n_steps is updated to 5001 => 4801 for checkpointing
+[37m[36mINFO[0m[0m 03/23 15:43:01 | Target test envs = [[0], [1], [2], [3]]
+[37m[36mINFO[0m[0m 03/23 15:43:01 | 
+[37m[36mINFO[0m[0m 03/23 15:43:01 | Testenv name escaping te_art_painting -> te_art_painting
+[37m[36mINFO[0m[0m 03/23 15:43:01 | Test envs = [0], name = te_art_painting
+[37m[36mINFO[0m[0m 03/23 15:43:01 | Batch sizes for each domain: [0, 32, 32, 32] (total=96)
+[37m[36mINFO[0m[0m 03/23 15:43:01 | steps-per-epoch for each domain: 58.62, 41.75, 98.25 -> min = 41.75
+[37m[36mINFO[0m[0m 03/23 15:43:02 | # of params = 23522375
+[37m[36mINFO[0m[0m 03/23 15:44:06 | Command :: train_all.py PACS0 --dataset PACS --deterministic --trial_seed 4 --checkpoint_freq 300 --data_dir /home/long/data/DomainBed --algorithm SD --run_name Scratch_{SD}_NOPCL_trail{4}_1-0
+Environment:
+	Python: 3.7.9
+	PyTorch: 1.13.1+cu117
+	Torchvision: 0.14.1+cu117
+	CUDA: 11.7
+	CUDNN: 8500
+	NumPy: 1.21.6
+	PIL: 9.5.0
+Args:
+	algorithm: SD
+	checkpoint_freq: 300
+	configs: []
+	data_dir: /home/long/data/DomainBed
+	dataset: PACS
+	debug: False
+	deterministic: True
+	evalmode: fast
+	holdout_fraction: 0.2
+	model_save: None
+	name: PACS0
+	no_swad: False
+	out_dir: train_output/PACS/Scratch_{SD}_NOPCL_trail{4}_1-0
+	out_root: train_output/PACS
+	pcl_loss: False
+	prebuild_loader: False
+	pretrained: False
+	run_name: Scratch_{SD}_NOPCL_trail{4}_1-0
+	seed: 0
+	show: False
+	steps: None
+	tb_freq: 10
+	test_envs: None
+	trial_seed: 4
+	unique_name: 240323_15-44-06_PACS0
+	work_dir: .
+HParams:
+	data_augmentation: True
+	val_augment: False
+	resnet18: False
+	resnet_dropout: 0.0
+	class_balanced: False
+	optimizer: adam
+	freeze_bn: True
+	pretrained: False
+	lr: 5e-05
+	batch_size: 32
+	weight_decay: 0.0
+	sd_reg: 0.1
+	swad: LossValley
+	swad_kwargs: 
+	  n_converge: 3
+	  n_tolerance: 6
+	  tolerance_ratio: 0.3
+	test_batchsize: 128
+	indomain_test: False
+	pcl_loss: False
+Dataset:
+	[PACS] #envs=4, #classes=7
+	env0: art_painting (#2048)
+	env1: cartoon (#2344)
+	env2: photo (#1670)
+	env3: sketch (#3929)
+
+[37m[36mINFO[0m[0m 03/23 15:44:06 | n_steps = 5001
+[37m[36mINFO[0m[0m 03/23 15:44:06 | checkpoint_freq = 300
+[37m[36mINFO[0m[0m 03/23 15:44:06 | n_steps is updated to 5001 => 4801 for checkpointing
+[37m[36mINFO[0m[0m 03/23 15:44:06 | Target test envs = [[0], [1], [2], [3]]
+[37m[36mINFO[0m[0m 03/23 15:44:06 | 
+[37m[36mINFO[0m[0m 03/23 15:44:06 | Testenv name escaping te_art_painting -> te_art_painting
+[37m[36mINFO[0m[0m 03/23 15:44:06 | Test envs = [0], name = te_art_painting
+[37m[36mINFO[0m[0m 03/23 15:44:06 | Batch sizes for each domain: [0, 32, 32, 32] (total=96)
+[37m[36mINFO[0m[0m 03/23 15:44:06 | steps-per-epoch for each domain: 58.62, 41.75, 98.25 -> min = 41.75
+[37m[36mINFO[0m[0m 03/23 15:44:07 | # of params = 23522375
+[37m[36mINFO[0m[0m 03/23 15:44:43 | Command :: train_all.py PACS0 --dataset PACS --deterministic --trial_seed 4 --checkpoint_freq 300 --data_dir /home/long/data/DomainBed --algorithm SD --run_name Scratch_{SD}_NOPCL_trail{4}_1-0
+Environment:
+	Python: 3.7.9
+	PyTorch: 1.13.1+cu117
+	Torchvision: 0.14.1+cu117
+	CUDA: 11.7
+	CUDNN: 8500
+	NumPy: 1.21.6
+	PIL: 9.5.0
+Args:
+	algorithm: SD
+	checkpoint_freq: 300
+	configs: []
+	data_dir: /home/long/data/DomainBed
+	dataset: PACS
+	debug: False
+	deterministic: True
+	evalmode: fast
+	holdout_fraction: 0.2
+	model_save: None
+	name: PACS0
+	no_swad: False
+	out_dir: train_output/PACS/Scratch_{SD}_NOPCL_trail{4}_1-0
+	out_root: train_output/PACS
+	pcl_loss: False
+	prebuild_loader: False
+	pretrained: False
+	run_name: Scratch_{SD}_NOPCL_trail{4}_1-0
+	seed: 0
+	show: False
+	steps: None
+	tb_freq: 10
+	test_envs: None
+	trial_seed: 4
+	unique_name: 240323_15-44-43_PACS0
+	work_dir: .
+HParams:
+	data_augmentation: True
+	val_augment: False
+	resnet18: False
+	resnet_dropout: 0.0
+	class_balanced: False
+	optimizer: adam
+	freeze_bn: True
+	pretrained: False
+	lr: 5e-05
+	batch_size: 32
+	weight_decay: 0.0
+	sd_reg: 0.1
+	swad: LossValley
+	swad_kwargs: 
+	  n_converge: 3
+	  n_tolerance: 6
+	  tolerance_ratio: 0.3
+	test_batchsize: 128
+	indomain_test: False
+	pcl_loss: False
+Dataset:
+	[PACS] #envs=4, #classes=7
+	env0: art_painting (#2048)
+	env1: cartoon (#2344)
+	env2: photo (#1670)
+	env3: sketch (#3929)
+
+[37m[36mINFO[0m[0m 03/23 15:44:43 | n_steps = 5001
+[37m[36mINFO[0m[0m 03/23 15:44:43 | checkpoint_freq = 300
+[37m[36mINFO[0m[0m 03/23 15:44:43 | n_steps is updated to 5001 => 4801 for checkpointing
+[37m[36mINFO[0m[0m 03/23 15:44:43 | Target test envs = [[0], [1], [2], [3]]
+[37m[36mINFO[0m[0m 03/23 15:44:43 | 
+[37m[36mINFO[0m[0m 03/23 15:44:43 | Testenv name escaping te_art_painting -> te_art_painting
+[37m[36mINFO[0m[0m 03/23 15:44:43 | Test envs = [0], name = te_art_painting
+[37m[36mINFO[0m[0m 03/23 15:44:43 | Batch sizes for each domain: [0, 32, 32, 32] (total=96)
+[37m[36mINFO[0m[0m 03/23 15:44:43 | steps-per-epoch for each domain: 58.62, 41.75, 98.25 -> min = 41.75
+[37m[36mINFO[0m[0m 03/23 15:44:44 | # of params = 23522375
+[37m[36mINFO[0m[0m 03/23 15:44:51 | test_in     test_out    train_in    train_out   tr_outloss  env0_in     env0_out    env1_out    env2_out    env3_out    step        epoch       loss        penalty     step_time   eval_time  
+[37m[36mINFO[0m[0m 03/23 15:44:51 | 0.209884    0.205379    0.000000    0.181020    8.556801    0.209884    0.205379    0.252137    0.242515    0.048408    0           0.000000    18.417822   482.894257  1.298076    5.634835   
+[37m[36mINFO[0m[0m 03/23 15:45:54 | 0.260525    0.273839    0.000000    0.449085    1.436355    0.260525    0.273839    0.452991    0.470060    0.424204    300         7.185629    1.817858    1.158961    0.176982    6.023260   
+[37m[36mINFO[0m[0m 03/23 15:46:56 | 0.251373    0.286064    0.000000    0.554920    1.240359    0.251373    0.286064    0.576923    0.520958    0.566879    600         14.371257   1.390690    0.877772    0.177479    5.751475   
+[37m[36mINFO[0m[0m 03/23 15:47:59 | 0.206223    0.222494    0.000000    0.553607    1.225339    0.206223    0.222494    0.506410    0.625749    0.528662    900         21.556886   1.241547    1.082782    0.177984    5.911530   
+[37m[36mINFO[0m[0m 03/23 15:49:02 | 0.223917    0.227384    0.000000    0.567737    1.170964    0.223917    0.227384    0.532051    0.592814    0.578344    1200        28.742515   1.123693    1.228169    0.177951    5.948222   
+[37m[36mINFO[0m[0m 03/23 15:50:05 | 0.255034    0.266504    0.000000    0.677439    0.940447    0.255034    0.266504    0.636752    0.679641    0.715924    1500        35.928144   1.023693    1.370499    0.177897    5.993551   
+[37m[36mINFO[0m[0m 03/23 15:51:08 | 0.281269    0.337408    0.000000    0.691488    0.929415    0.281269    0.337408    0.670940    0.664671    0.738854    1800        43.113772   0.939610    1.493412    0.178427    6.020082   
+[37m[36mINFO[0m[0m 03/23 15:52:11 | 0.258694    0.303178    0.000000    0.686033    0.936786    0.258694    0.303178    0.647436    0.712575    0.698089    2100        50.299401   0.863378    1.598094    0.178777    6.037699   
+[37m[36mINFO[0m[0m 03/23 15:53:14 | 0.280659    0.342298    0.000000    0.734602    0.808606    0.280659    0.342298    0.720085    0.715569    0.768153    2400        57.485030   0.813590    1.660218    0.178648    6.075651   
+[37m[36mINFO[0m[0m 03/23 15:54:17 | 0.293472    0.347188    0.000000    0.728903    0.832145    0.293472    0.347188    0.675214    0.739521    0.771975    2700        64.670659   0.746363    1.735943    0.179036    6.042508   
+[37m[36mINFO[0m[0m 03/23 15:55:21 | 0.308115    0.352078    0.000000    0.716489    0.809092    0.308115    0.352078    0.664530    0.766467    0.718471    3000        71.856287   0.701692    1.808825    0.178567    6.045399   
+[37m[36mINFO[0m[0m 03/23 15:56:24 | 0.280049    0.305623    0.000000    0.717094    0.800164    0.280049    0.305623    0.666667    0.721557    0.763057    3300        79.041916   0.645613    1.861504    0.178603    6.087114   
+[37m[36mINFO[0m[0m 03/23 15:57:27 | 0.296522    0.344743    0.000000    0.744821    0.756274    0.296522    0.344743    0.732906    0.715569    0.785987    3600        86.227545   0.600786    1.905681    0.178721    6.133534   
+[37m[36mINFO[0m[0m 03/23 15:58:30 | 0.297743    0.347188    0.000000    0.775159    0.678676    0.297743    0.347188    0.771368    0.760479    0.793631    3900        93.413174   0.563088    1.953843    0.178424    6.114174   
+[37m[36mINFO[0m[0m 03/23 15:59:34 | 0.308725    0.347188    0.000000    0.774590    0.685764    0.308725    0.347188    0.732906    0.793413    0.797452    4200        100.598802  0.521622    2.012733    0.178260    6.156651   
+[37m[36mINFO[0m[0m 03/23 16:00:37 | 0.347163    0.378973    0.000000    0.779114    0.655823    0.347163    0.378973    0.737179    0.787425    0.812739    4500        107.784431  0.494682    2.038333    0.178450    6.199075   
+[37m[36mINFO[0m[0m 03/23 16:01:40 | 0.333740    0.369193    0.000000    0.793708    0.684866    0.333740    0.369193    0.754274    0.778443    0.848408    4800        114.970060  0.455371    2.080329    0.178571    6.144771   
+[37m[36mINFO[0m[0m 03/23 16:01:40 | ---
+[37m[33mWARNING[0m[0m 03/23 16:01:40 | Evaluate SWAD ...
+[37m[36mINFO[0m[0m 03/23 16:01:47 | 0.291031    0.342298    0.000000    0.766882    0.700121    0.291031    0.342298    0.732906    0.766467    0.801274    [1501-4800]  (N=12)
+[37m[36mINFO[0m[0m 03/23 16:01:47 | oracle = 34.716%
+[37m[36mINFO[0m[0m 03/23 16:01:47 | iid = 33.374%
+[37m[36mINFO[0m[0m 03/23 16:01:47 | last = 33.374%
+[37m[36mINFO[0m[0m 03/23 16:01:47 | last (inD) = 79.371%
+[37m[36mINFO[0m[0m 03/23 16:01:47 | iid (inD) = 79.371%
+[37m[36mINFO[0m[0m 03/23 16:01:47 | SWAD = 29.103%
+[37m[36mINFO[0m[0m 03/23 16:01:47 | SWAD (inD) = 76.688%
+[37m[36mINFO[0m[0m 03/23 16:01:47 | 
+[37m[36mINFO[0m[0m 03/23 16:01:47 | Testenv name escaping te_cartoon -> te_cartoon
+[37m[36mINFO[0m[0m 03/23 16:01:47 | Test envs = [1], name = te_cartoon
+[37m[36mINFO[0m[0m 03/23 16:01:47 | Batch sizes for each domain: [32, 0, 32, 32] (total=96)
+[37m[36mINFO[0m[0m 03/23 16:01:47 | steps-per-epoch for each domain: 51.22, 41.75, 98.25 -> min = 41.75
+[37m[36mINFO[0m[0m 03/23 16:01:48 | # of params = 23522375
+[37m[36mINFO[0m[0m 03/23 16:01:54 | test_in     test_out    train_in    train_out   tr_outloss  env0_out    env1_in     env1_out    env2_out    env3_out    step        epoch       loss        penalty     step_time   eval_time  
+[37m[36mINFO[0m[0m 03/23 16:01:54 | 0.125267    0.113248    0.000000    0.117722    9.709055    0.154034    0.125267    0.113248    0.173653    0.025478    0           0.000000    10.163368   58.741013   0.168518    6.258871   
+[37m[36mINFO[0m[0m 03/23 16:02:57 | 0.328891    0.382479    0.000000    0.432225    1.494132    0.295844    0.328891    0.382479    0.526946    0.473885    300         7.185629    1.796458    1.511690    0.178161    6.359684   
+[37m[36mINFO[0m[0m 03/23 16:04:01 | 0.346482    0.326923    0.000000    0.501989    1.332610    0.364303    0.346482    0.326923    0.565868    0.575796    600         14.371257   1.466934    0.772020    0.177982    6.344290   
+[37m[36mINFO[0m[0m 03/23 16:05:04 | 0.383262    0.373932    0.000000    0.546976    1.231136    0.432763    0.383262    0.373932    0.601796    0.606369    900         21.556886   1.327477    0.953517    0.178461    6.238632   
+[37m[36mINFO[0m[0m 03/23 16:06:08 | 0.314499    0.307692    0.000000    0.576563    1.204429    0.435208    0.314499    0.307692    0.676647    0.617834    1200        28.742515   1.214778    1.098524    0.178608    6.184379   
+[37m[36mINFO[0m[0m 03/23 16:07:11 | 0.397122    0.358974    0.000000    0.625939    1.054433    0.508557    0.397122    0.358974    0.682635    0.686624    1500        35.928144   1.105813    1.255336    0.178655    6.224817   
+[37m[36mINFO[0m[0m 03/23 16:08:14 | 0.388060    0.354701    0.000000    0.642683    1.049958    0.486553    0.388060    0.354701    0.748503    0.692994    1800        43.113772   1.028415    1.366721    0.178413    6.203570   
+[37m[36mINFO[0m[0m 03/23 16:09:18 | 0.420043    0.408120    0.000000    0.677769    0.947460    0.528117    0.420043    0.408120    0.748503    0.756688    2100        50.299401   0.955414    1.465831    0.178325    6.231283   
+[37m[36mINFO[0m[0m 03/23 16:10:21 | 0.446162    0.459402    0.000000    0.692148    0.928665    0.523227    0.446162    0.459402    0.754491    0.798726    2400        57.485030   0.901632    1.540529    0.178394    6.156087   
+[37m[36mINFO[0m[0m 03/23 16:11:24 | 0.496802    0.497863    0.000000    0.691212    0.893431    0.567237    0.496802    0.497863    0.739521    0.766879    2700        64.670659   0.834249    1.624812    0.178519    6.204912   
+[37m[36mINFO[0m[0m 03/23 16:12:28 | 0.458422    0.433761    0.000000    0.710675    0.826067    0.596577    0.458422    0.433761    0.763473    0.771975    3000        71.856287   0.772098    1.697248    0.178724    6.222151   
+[37m[36mINFO[0m[0m 03/23 16:13:31 | 0.482409    0.493590    0.000000    0.711218    0.820772    0.594132    0.482409    0.493590    0.739521    0.800000    3300        79.041916   0.720563    1.767507    0.178473    6.206948   
+[37m[36mINFO[0m[0m 03/23 16:14:34 | 0.521855    0.491453    0.000000    0.736808    0.789881    0.621027    0.521855    0.491453    0.766467    0.822930    3600        86.227545   0.664518    1.835194    0.178841    6.246121   
+[37m[36mINFO[0m[0m 03/23 16:15:38 | 0.514925    0.489316    0.000000    0.728195    0.787961    0.603912    0.514925    0.489316    0.793413    0.787261    3900        93.413174   0.630560    1.872679    0.179297    6.320932   
+[37m[36mINFO[0m[0m 03/23 16:16:42 | 0.527186    0.512821    0.000000    0.749626    0.745582    0.638142    0.527186    0.512821    0.781437    0.829299    4200        100.598802  0.582016    1.935618    0.178702    6.270139   
+[37m[36mINFO[0m[0m 03/23 16:17:45 | 0.525586    0.514957    0.000000    0.741354    0.765081    0.628362    0.525586    0.514957    0.757485    0.838217    4500        107.784431  0.540321    1.989525    0.178628    6.276966   
+[37m[36mINFO[0m[0m 03/23 16:18:49 | 0.481876    0.465812    0.000000    0.773427    0.735384    0.682152    0.481876    0.465812    0.811377    0.826752    4800        114.970060  0.500231    2.036594    0.179256    6.260135   
+[37m[36mINFO[0m[0m 03/23 16:18:49 | ---
+[37m[31mERROR[0m[0m 03/23 16:18:49 | Requested final model, but model is not yet converged; return last model instead
+[37m[33mWARNING[0m[0m 03/23 16:18:49 | Evaluate SWAD ...
+[37m[36mINFO[0m[0m 03/23 16:18:55 | 0.541045    0.547009    0.000000    0.781277    0.655922    0.687042    0.541045    0.547009    0.808383    0.848408    [4501-4800]  (N=300)
+[37m[36mINFO[0m[0m 03/23 16:18:55 | oracle = 52.559%
+[37m[36mINFO[0m[0m 03/23 16:18:55 | iid = 48.188%
+[37m[36mINFO[0m[0m 03/23 16:18:55 | last = 48.188%
+[37m[36mINFO[0m[0m 03/23 16:18:55 | last (inD) = 77.343%
+[37m[36mINFO[0m[0m 03/23 16:18:55 | iid (inD) = 77.343%
+[37m[36mINFO[0m[0m 03/23 16:18:55 | SWAD = 54.104%
+[37m[36mINFO[0m[0m 03/23 16:18:55 | SWAD (inD) = 78.128%
+[37m[36mINFO[0m[0m 03/23 16:18:55 | 
+[37m[36mINFO[0m[0m 03/23 16:18:55 | Testenv name escaping te_photo -> te_photo
+[37m[36mINFO[0m[0m 03/23 16:18:55 | Test envs = [2], name = te_photo
+[37m[36mINFO[0m[0m 03/23 16:18:55 | Batch sizes for each domain: [32, 32, 0, 32] (total=96)
+[37m[36mINFO[0m[0m 03/23 16:18:55 | steps-per-epoch for each domain: 51.22, 58.62, 98.25 -> min = 51.22
+[37m[36mINFO[0m[0m 03/23 16:18:56 | # of params = 23522375
+[37m[36mINFO[0m[0m 03/23 16:19:03 | test_in     test_out    train_in    train_out   tr_outloss  env0_out    env1_out    env2_in     env2_out    env3_out    step        epoch       loss        penalty     step_time   eval_time  
+[37m[36mINFO[0m[0m 03/23 16:19:03 | 0.109281    0.107784    0.000000    0.160739    11.635099   0.146699    0.143162    0.109281    0.107784    0.192357    0           0.000000    18.342968   174.638214  0.172098    6.045852   
+[37m[36mINFO[0m[0m 03/23 16:20:06 | 0.330838    0.332335    0.000000    0.379898    1.580424    0.278729    0.438034    0.330838    0.332335    0.422930    300         5.857230    1.802646    1.949644    0.178163    6.003442   
+[37m[36mINFO[0m[0m 03/23 16:21:09 | 0.391467    0.362275    0.000000    0.491162    1.369126    0.386308    0.553419    0.391467    0.362275    0.533758    600         11.714460   1.527621    0.664286    0.178121    5.936965   
+[37m[36mINFO[0m[0m 03/23 16:22:12 | 0.413922    0.416168    0.000000    0.531966    1.278408    0.381418    0.606838    0.413922    0.416168    0.607643    900         17.571690   1.400886    0.835535    0.178535    5.966085   
+[37m[36mINFO[0m[0m 03/23 16:23:15 | 0.443114    0.407186    0.000000    0.573120    1.187100    0.437653    0.628205    0.443114    0.407186    0.653503    1200        23.428920   1.296548    0.974275    0.178508    5.914070   
+[37m[36mINFO[0m[0m 03/23 16:24:18 | 0.433383    0.410180    0.000000    0.612672    1.128635    0.440098    0.673077    0.433383    0.410180    0.724841    1500        29.286150   1.215234    1.101587    0.178558    5.873156   
+[37m[36mINFO[0m[0m 03/23 16:25:21 | 0.455090    0.434132    0.000000    0.636957    1.060944    0.469438    0.705128    0.455090    0.434132    0.736306    1800        35.143380   1.142812    1.188430    0.178645    5.985201   
+[37m[36mINFO[0m[0m 03/23 16:26:24 | 0.465569    0.479042    0.000000    0.603440    1.157972    0.464548    0.619658    0.465569    0.479042    0.726115    2100        41.000610   1.081218    1.272848    0.178454    5.889447   
+[37m[36mINFO[0m[0m 03/23 16:27:27 | 0.414671    0.416168    0.000000    0.644566    1.001305    0.501222    0.698718    0.414671    0.416168    0.733758    2400        46.857840   1.029785    1.337759    0.178516    5.901994   
+[37m[36mINFO[0m[0m 03/23 16:28:30 | 0.452844    0.416168    0.000000    0.624212    1.032635    0.520782    0.641026    0.452844    0.416168    0.710828    2700        52.715070   0.967641    1.426115    0.178332    5.937174   
+[37m[36mINFO[0m[0m 03/23 16:29:33 | 0.445359    0.437126    0.000000    0.678885    0.933074    0.547677    0.702991    0.445359    0.437126    0.785987    3000        58.572300   0.912618    1.498652    0.178789    5.884541   
+[37m[36mINFO[0m[0m 03/23 16:30:36 | 0.471557    0.473054    0.000000    0.696274    0.854999    0.555012    0.741453    0.471557    0.473054    0.792357    3300        64.429530   0.862195    1.575672    0.178711    5.929057   
+[37m[36mINFO[0m[0m 03/23 16:31:40 | 0.471557    0.455090    0.000000    0.701561    0.845757    0.579462    0.726496    0.471557    0.455090    0.798726    3600        70.286760   0.793338    1.659642    0.178712    5.965025   
+[37m[36mINFO[0m[0m 03/23 16:32:43 | 0.505988    0.497006    0.000000    0.696315    0.882931    0.515892    0.769231    0.505988    0.497006    0.803822    3900        76.143990   0.747178    1.735115    0.179041    5.955069   
+[37m[36mINFO[0m[0m 03/23 16:33:46 | 0.546407    0.547904    0.000000    0.746194    0.791904    0.669927    0.745726    0.546407    0.547904    0.822930    4200        82.001220   0.710192    1.774788    0.178932    5.934165   
+[37m[36mINFO[0m[0m 03/23 16:34:49 | 0.525449    0.526946    0.000000    0.736969    0.770541    0.623472    0.760684    0.525449    0.526946    0.826752    4500        87.858450   0.655861    1.849575    0.179098    5.986173   
+[37m[36mINFO[0m[0m 03/23 16:35:53 | 0.579341    0.529940    0.000000    0.742235    0.817618    0.625917    0.790598    0.579341    0.529940    0.810191    4800        93.715680   0.625334    1.899024    0.178957    5.988790   
+[37m[36mINFO[0m[0m 03/23 16:35:53 | ---
+[37m[31mERROR[0m[0m 03/23 16:35:53 | Requested final model, but model is not yet converged; return last model instead
+[37m[33mWARNING[0m[0m 03/23 16:35:53 | Evaluate SWAD ...
+[37m[36mINFO[0m[0m 03/23 16:35:59 | 0.575599    0.577844    0.000000    0.778130    0.706827    0.682152    0.801282    0.575599    0.577844    0.850955    [4501-4800]  (N=300)
+[37m[36mINFO[0m[0m 03/23 16:35:59 | oracle = 54.641%
+[37m[36mINFO[0m[0m 03/23 16:35:59 | iid = 54.641%
+[37m[36mINFO[0m[0m 03/23 16:35:59 | last = 57.934%
+[37m[36mINFO[0m[0m 03/23 16:35:59 | last (inD) = 74.224%
+[37m[36mINFO[0m[0m 03/23 16:35:59 | iid (inD) = 74.619%
+[37m[36mINFO[0m[0m 03/23 16:35:59 | SWAD = 57.560%
+[37m[36mINFO[0m[0m 03/23 16:35:59 | SWAD (inD) = 77.813%
+[37m[36mINFO[0m[0m 03/23 16:35:59 | 
+[37m[36mINFO[0m[0m 03/23 16:35:59 | Testenv name escaping te_sketch -> te_sketch
+[37m[36mINFO[0m[0m 03/23 16:35:59 | Test envs = [3], name = te_sketch
+[37m[36mINFO[0m[0m 03/23 16:35:59 | Batch sizes for each domain: [32, 32, 32, 0] (total=96)
+[37m[36mINFO[0m[0m 03/23 16:35:59 | steps-per-epoch for each domain: 51.22, 58.62, 41.75 -> min = 41.75
+[37m[36mINFO[0m[0m 03/23 16:36:00 | # of params = 23522375
+[37m[36mINFO[0m[0m 03/23 16:36:07 | test_in     test_out    train_in    train_out   tr_outloss  env0_out    env1_out    env2_out    env3_in     env3_out    step        epoch       loss        penalty     step_time   eval_time  
+[37m[36mINFO[0m[0m 03/23 16:36:07 | 0.191476    0.192357    0.000000    0.132549    7.577986    0.146699    0.143162    0.107784    0.191476    0.192357    0           0.000000    14.139567   192.678024  0.171190    7.263858   
+[37m[36mINFO[0m[0m 03/23 16:37:12 | 0.271310    0.278981    0.000000    0.375359    1.626070    0.288509    0.382479    0.455090    0.271310    0.278981    300         7.185629    1.867165    0.684670    0.178365    7.158685   
+[37m[36mINFO[0m[0m 03/23 16:38:16 | 0.236323    0.224204    0.000000    0.460218    1.458759    0.388753    0.467949    0.523952    0.236323    0.224204    600         14.371257   1.565246    0.536946    0.178322    7.351198   
+[37m[36mINFO[0m[0m 03/23 16:39:21 | 0.274173    0.249682    0.000000    0.537680    1.258133    0.400978    0.598291    0.613772    0.274173    0.249682    900         21.556886   1.434752    0.728580    0.178657    7.158571   
+[37m[36mINFO[0m[0m 03/23 16:40:25 | 0.324746    0.321019    0.000000    0.537122    1.262118    0.400978    0.557692    0.652695    0.324746    0.321019    1200        28.742515   1.334915    0.862873    0.178848    7.189386   
+[37m[36mINFO[0m[0m 03/23 16:41:29 | 0.250954    0.238217    0.000000    0.581575    1.148422    0.452323    0.681624    0.610778    0.250954    0.238217    1500        35.928144   1.227054    1.017392    0.178489    7.095637   
+[37m[36mINFO[0m[0m 03/23 16:42:34 | 0.280216    0.248408    0.000000    0.605108    1.117128    0.469438    0.660256    0.685629    0.280216    0.248408    1800        43.113772   1.130899    1.156095    0.178528    7.121786   
+[37m[36mINFO[0m[0m 03/23 16:43:38 | 0.318384    0.296815    0.000000    0.658742    0.988284    0.562347    0.677350    0.736527    0.318384    0.296815    2100        50.299401   1.059614    1.260696    0.178423    7.240971   
+[37m[36mINFO[0m[0m 03/23 16:44:42 | 0.331107    0.319745    0.000000    0.681377    0.912926    0.572127    0.726496    0.745509    0.331107    0.319745    2400        57.485030   0.982860    1.362770    0.178505    7.242840   
+[37m[36mINFO[0m[0m 03/23 16:45:47 | 0.299936    0.292994    0.000000    0.696301    0.866632    0.574572    0.747863    0.766467    0.299936    0.292994    2700        64.670659   0.913043    1.469162    0.178292    7.232673   
+[37m[36mINFO[0m[0m 03/23 16:46:51 | 0.395356    0.394904    0.000000    0.691501    0.921447    0.589242    0.730769    0.754491    0.395356    0.394904    3000        71.856287   0.843712    1.554775    0.178872    7.199285   
+[37m[36mINFO[0m[0m 03/23 16:47:55 | 0.394084    0.373248    0.000000    0.731965    0.802257    0.633252    0.769231    0.793413    0.394084    0.373248    3300        79.041916   0.786842    1.631714    0.178537    7.159221   
+[37m[36mINFO[0m[0m 03/23 16:49:00 | 0.350827    0.359236    0.000000    0.725716    0.845457    0.623472    0.754274    0.799401    0.350827    0.359236    3600        86.227545   0.727623    1.717454    0.178907    7.216741   
+[37m[36mINFO[0m[0m 03/23 16:50:04 | 0.335878    0.336306    0.000000    0.740640    0.791666    0.660147    0.786325    0.775449    0.335878    0.336306    3900        93.413174   0.658948    1.813151    0.179177    7.235544   
+[37m[36mINFO[0m[0m 03/23 16:51:09 | 0.334288    0.355414    0.000000    0.704855    0.939967    0.618582    0.696581    0.799401    0.334288    0.355414    4200        100.598802  0.628438    1.860008    0.178751    7.167850   
+[37m[36mINFO[0m[0m 03/23 16:52:13 | 0.420165    0.407643    0.000000    0.732147    0.784229    0.647922    0.782051    0.766467    0.420165    0.407643    4500        107.784431  0.572671    1.926434    0.178791    7.152343   
+[37m[36mINFO[0m[0m 03/23 16:53:18 | 0.425254    0.411465    0.000000    0.759114    0.758331    0.672372    0.790598    0.814371    0.425254    0.411465    4800        114.970060  0.521186    1.983679    0.179188    7.164043   
+[37m[36mINFO[0m[0m 03/23 16:53:18 | ---
+[37m[31mERROR[0m[0m 03/23 16:53:18 | Requested final model, but model is not yet converged; return last model instead
+[37m[33mWARNING[0m[0m 03/23 16:53:18 | Evaluate SWAD ...
+[37m[36mINFO[0m[0m 03/23 16:53:25 | 0.385178    0.373248    0.000000    0.776892    0.704237    0.709046    0.816239    0.805389    0.385178    0.373248    [4501-4800]  (N=300)
+[37m[36mINFO[0m[0m 03/23 16:53:25 | oracle = 42.525%
+[37m[36mINFO[0m[0m 03/23 16:53:25 | iid = 42.525%
+[37m[36mINFO[0m[0m 03/23 16:53:25 | last = 42.525%
+[37m[36mINFO[0m[0m 03/23 16:53:25 | last (inD) = 75.911%
+[37m[36mINFO[0m[0m 03/23 16:53:25 | iid (inD) = 75.911%
+[37m[36mINFO[0m[0m 03/23 16:53:25 | SWAD = 38.518%
+[37m[36mINFO[0m[0m 03/23 16:53:25 | SWAD (inD) = 77.689%
+[37m[36mINFO[0m[0m 03/23 16:53:25 | === Summary ===
+[37m[36mINFO[0m[0m 03/23 16:53:25 | Command: train_all.py PACS0 --dataset PACS --deterministic --trial_seed 4 --checkpoint_freq 300 --data_dir /home/long/data/DomainBed --algorithm SD --run_name Scratch_{SD}_NOPCL_trail{4}_1-0
+[37m[36mINFO[0m[0m 03/23 16:53:25 | Unique name: 240323_15-44-43_PACS0
+[37m[36mINFO[0m[0m 03/23 16:53:25 | Out path: train_output/PACS/Scratch_{SD}_NOPCL_trail{4}_1-0
+[37m[36mINFO[0m[0m 03/23 16:53:25 | Algorithm: SD
+[37m[36mINFO[0m[0m 03/23 16:53:25 | Dataset: PACS
++------------+--------------+---------+---------+---------+---------+
+| Selection  | art_painting | cartoon |  photo  |  sketch |   Avg.  |
++------------+--------------+---------+---------+---------+---------+
+|   oracle   |   34.716%    | 52.559% | 54.641% | 42.525% | 46.110% |
+|    iid     |   33.374%    | 48.188% | 54.641% | 42.525% | 44.682% |
+|    last    |   33.374%    | 48.188% | 57.934% | 42.525% | 45.505% |
+| last (inD) |   79.371%    | 77.343% | 74.224% | 75.911% | 76.712% |
+| iid (inD)  |   79.371%    | 77.343% | 74.619% | 75.911% | 76.811% |
+|    SWAD    |   29.103%    | 54.104% | 57.560% | 38.518% | 44.821% |
+| SWAD (inD) |   76.688%    | 78.128% | 77.813% | 77.689% | 77.580% |
++------------+--------------+---------+---------+---------+---------+
