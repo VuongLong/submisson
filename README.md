@@ -48,7 +48,7 @@ PIL: 8.0.1
 `train_all.py` script conducts multiple leave-one-out cross-validations for all target domain.
 
 ```sh
-python train_all.py exp_name --dataset PACS --data_dir /my/datasets/path
+python train_all.py exp_name --dataset PACS --data_dir /my/datasets/path  --algorithm ERM --pretrained
 ```
 
 Experiment results are reported as a table. In the table, the row `SWAD` indicates out-of-domain accuracy from SWAD.
@@ -82,62 +82,41 @@ Note that the difference in a detailed environment or uncontrolled randomness ma
 - PACS
 
 ```
-python train_all.py PACS0 --dataset PACS --deterministic --trial_seed 0 --checkpoint_freq 300 --data_dir /my/datasets/path
-python train_all.py PACS1 --dataset PACS --deterministic --trial_seed 1 --checkpoint_freq 300 --data_dir /my/datasets/path
-python train_all.py PACS2 --dataset PACS --deterministic --trial_seed 2 --checkpoint_freq 300 --data_dir /my/datasets/path
+python train_all.py PACS0 --dataset PACS --deterministic --trial_seed 0 --checkpoint_freq 300 --data_dir /my/datasets/path  --algorithm ERM --pretrained
+python train_all.py PACS1 --dataset PACS --deterministic --trial_seed 1 --checkpoint_freq 300 --data_dir /my/datasets/path --algorithm ERM --pretrained
+python train_all.py PACS2 --dataset PACS --deterministic --trial_seed 2 --checkpoint_freq 300 --data_dir /my/datasets/path  --algorithm ERM --pretrained
 ```
 
 - VLCS
 
 ```
-python train_all.py VLCS0 --dataset VLCS --deterministic --trial_seed 0 --checkpoint_freq 300 --tolerance_ratio 0.2 --data_dir /my/datasets/path
-python train_all.py VLCS1 --dataset VLCS --deterministic --trial_seed 1 --checkpoint_freq 300 --tolerance_ratio 0.2 --data_dir /my/datasets/path
-python train_all.py VLCS2 --dataset VLCS --deterministic --trial_seed 2 --checkpoint_freq 300 --tolerance_ratio 0.2 --data_dir /my/datasets/path
+python train_all.py VLCS0 --dataset VLCS --deterministic --trial_seed 0 --checkpoint_freq 300 --tolerance_ratio 0.2 --data_dir /my/datasets/path --algorithm ERM --pretrained
+python train_all.py VLCS1 --dataset VLCS --deterministic --trial_seed 1 --checkpoint_freq 300 --tolerance_ratio 0.2 --data_dir /my/datasets/path --algorithm ERM --pretrained
+python train_all.py VLCS2 --dataset VLCS --deterministic --trial_seed 2 --checkpoint_freq 300 --tolerance_ratio 0.2 --data_dir /my/datasets/path --algorithm ERM --pretrained
 ```
 
 - OfficeHome
 
 ```
-python train_all.py OH0 --dataset OfficeHome --deterministic --trial_seed 0 --checkpoint_freq 300 --data_dir /my/datasets/path
-python train_all.py OH1 --dataset OfficeHome --deterministic --trial_seed 1 --checkpoint_freq 300 --data_dir /my/datasets/path
-python train_all.py OH2 --dataset OfficeHome --deterministic --trial_seed 2 --checkpoint_freq 300 --data_dir /my/datasets/path
+python train_all.py OH0 --dataset OfficeHome --deterministic --trial_seed 0 --checkpoint_freq 300 --data_dir /my/datasets/path --algorithm ERM --pretrained
+python train_all.py OH1 --dataset OfficeHome --deterministic --trial_seed 1 --checkpoint_freq 300 --data_dir /my/datasets/path --algorithm ERM --pretrained
+python train_all.py OH2 --dataset OfficeHome --deterministic --trial_seed 2 --checkpoint_freq 300 --data_dir /my/datasets/path --algorithm ERM --pretrained
 ```
 
 - TerraIncognita
 
 ```
-python train_all.py TR0 --dataset TerraIncognita --deterministic --trial_seed 0 --checkpoint_freq 300 --data_dir /my/datasets/path
-python train_all.py TR1 --dataset TerraIncognita --deterministic --trial_seed 1 --checkpoint_freq 300 --data_dir /my/datasets/path
-python train_all.py TR2 --dataset TerraIncognita --deterministic --trial_seed 2 --checkpoint_freq 300 --data_dir /my/datasets/path
+python train_all.py TR0 --dataset TerraIncognita --deterministic --trial_seed 0 --checkpoint_freq 300 --data_dir /my/datasets/path --algorithm ERM --pretrained
+python train_all.py TR1 --dataset TerraIncognita --deterministic --trial_seed 1 --checkpoint_freq 300 --data_dir /my/datasets/path --algorithm ERM --pretrained
+python train_all.py TR2 --dataset TerraIncognita --deterministic --trial_seed 2 --checkpoint_freq 300 --data_dir /my/datasets/path --algorithm ERM --pretrained
 ```
 
 - DomainNet
 
 ```
-python train_all.py DN0 --dataset DomainNet --deterministic --trial_seed 0 --checkpoint_freq 3000 --data_dir /my/datasets/path
-python train_all.py DN1 --dataset DomainNet --deterministic --trial_seed 1 --checkpoint_freq 3000 --data_dir /my/datasets/path
-python train_all.py DN2 --dataset DomainNet --deterministic --trial_seed 2 --checkpoint_freq 3000 --data_dir /my/datasets/path
-```
-
-
-## Main Results
-
-<p align="center">
-    <img src="./assets/fig2.png" width="80%" />
-</p>
-
-
-## Citation
-
-The paper will be published at NeurIPS 2021.
-
-```
-@inproceedings{cha2021swad,
-  title={SWAD: Domain Generalization by Seeking Flat Minima},
-  author={Cha, Junbum and Chun, Sanghyuk and Lee, Kyungjae and Cho, Han-Cheol and Park, Seunghyun and Lee, Yunsung and Park, Sungrae},
-  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
-  year={2021}
-}
+python train_all.py DN0 --dataset DomainNet --deterministic --trial_seed 0 --checkpoint_freq 3000 --data_dir /my/datasets/path --algorithm ERM --pretrained --prototype_per_class 4
+python train_all.py DN1 --dataset DomainNet --deterministic --trial_seed 1 --checkpoint_freq 3000 --data_dir /my/datasets/path --algorithm ERM --pretrained --prototype_per_class 4
+python train_all.py DN2 --dataset DomainNet --deterministic --trial_seed 2 --checkpoint_freq 3000 --data_dir /my/datasets/path --algorithm ERM --pretrained --prototype_per_class 4
 ```
 
 ## License

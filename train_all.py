@@ -51,12 +51,6 @@ def main():
     parser.add_argument("--tb_freq", default=10)
     parser.add_argument("--debug", action="store_true", help="Run w/ debug mode")
     parser.add_argument("--show", action="store_true", help="Show args and hparams w/o run")
-    parser.add_argument("--disc_weight", type=float, default=0.01)
-    parser.add_argument("--clip_disc", type=float, default=50)
-    parser.add_argument("--maxinfo_weight", type=float, default=0.1)
-    parser.add_argument("--ot_weight", type=float, default=0.1)
-    parser.add_argument("--smooth", type=float, default=0.5)
-    parser.add_argument("--pcl_type", type=int, default=0)
     parser.add_argument("--run_name", type=str, default=None, help="Name of save folder")
     parser.add_argument("--pretrained", action="store_true", help="")
     parser.add_argument("--no_swad", action="store_true", help="Not using SWAD, default is using swad")
@@ -76,14 +70,7 @@ def main():
     keys = [open(key, encoding="utf8") for key in keys]
     hparams = Config(*keys, default=hparams)
     hparams.argv_update(left_argv)
-    hparams['disc_weight'] = args.disc_weight
-    hparams['smooth'] = args.smooth
-    hparams['clip_disc'] = args.clip_disc
-    hparams['maxinfo_weight'] = args.maxinfo_weight
-    hparams['ot_weight'] = args.ot_weight
-    hparams['pretrained'] = args.pretrained
     hparams['prototype_per_class'] = args.prototype_per_class
-    hparams['pcl_type'] = args.pcl_type
 
     if args.no_swad:
         hparams['swad'] = None

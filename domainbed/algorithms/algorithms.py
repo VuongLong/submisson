@@ -173,34 +173,6 @@ class MaxInfo(nn.Module):
 		
 		return loss
 
-class ProxyPLoss(nn.Module):
-
-	def __init__(self, num_classes, scale=0.07):
-		super(ProxyPLoss, self).__init__()
-		self.soft_plus = nn.Softplus()
-		self.label = torch.LongTensor([i for i in range(num_classes)])
-		self.scale = 1 / scale
-	
-	def forward(self, feature, target, proxy):
-		# import pdb; pdb.set_trace()
-
-		pred = F.linear(feature, proxy)  # (N, C)
-		label = (self.label.unsqueeze(1).to(feature.device) == target.unsqueeze(0))  # (C, N)
-		pred = torch.masked_select(pred.transpose(1, 0), label)  # N,
-		
-		pred = pred.unsqueeze(1)  # (N, 1)
-		
-		feature = torch.matmul(feature, feature.transpose(1, 0))  # (N, N)
-		label_matrix = target.unsqueeze(1) == target.unsqueeze(0)  # (N, N)
-		feature = feature * ~label_matrix  # get negative matrix
-		feature = feature.masked_fill(feature < 1e-6, -np.inf)  # (N, N)
-		
-		logits = torch.cat([pred, feature], dim=1)  # (N, 1+N)
-		label = torch.zeros(logits.size(0), dtype=torch.long).to(feature.device)
-		loss = F.nll_loss(F.log_softmax(self.scale * logits, dim=1), label)
-		
-		return loss		
-
 class ERM(Algorithm):
 	"""
 	Empirical Risk Minimization (ERM)
@@ -215,14 +187,13 @@ class ERM(Algorithm):
 		self.n_domain_classes = num_domains
 		self.feature_dim = self.featurizer.n_outputs
 		self.batch_size = hparams['batch_size']
-		self.checkpoint_freq = 300
 
+		self.warm_up = hparams['warm_up']
 		self.smooth = hparams['smooth']
 		self.disc_weight = hparams['disc_weight']
 		self.maxinfo_weight = hparams['maxinfo_weight']
 		self.ot_weight = hparams['ot_weight']
 		self.clip_disc = hparams['clip_disc']
-		self.pcl_type = hparams['pcl_type']
 		
 
 		self.classifier = Classifier(feature_dim=self.featurizer.n_outputs, 
@@ -235,14 +206,9 @@ class ERM(Algorithm):
 		self.num_embed = self.n_classes * self.prototype_per_class
 		self.prototype_net = Prototype(self.num_embed, self.n_classes, self.prototype_per_class, self.feature_dim)
 
-		
 		# Define Disciminator for Prototype_DANN
-		disc_hparams = {}
-		disc_hparams["mlp_width"] = 256
-		disc_hparams["mlp_depth"] = 3
-		disc_hparams["mlp_dropout"] = 0.5
 		self.alpha = torch.tensor(self.disc_weight, requires_grad=False)
-		self.discriminator = networks.MLP(self.feature_dim, self.n_domain_classes, disc_hparams)
+		self.discriminator = networks.MLP(self.feature_dim, self.n_domain_classes, hparams)
 		self.subspace_embeddings = nn.Embedding(self.num_embed, self.feature_dim)
 
 
@@ -256,12 +222,6 @@ class ERM(Algorithm):
 			lr=self.hparams["lr"], 
 			weight_decay=self.hparams["weight_decay"])
 
-		# self.optimizer = get_optimizer(
-		# 	hparams["optimizer"],
-		# 	self.network.parameters(),
-		# 	lr=self.hparams["lr"],
-		# 	weight_decay=self.hparams["weight_decay"],
-		# )
 
 		self.disc_optimizer = torch.optim.Adam(
 			list(self.subspace_embeddings.parameters())+
@@ -272,8 +232,6 @@ class ERM(Algorithm):
 
 
 		self.maxinfo_loss = MaxInfo(num_classes)
-		self.proxy_loss = ProxyPLoss(num_classes)
-		
 		self.criterion = nn.CrossEntropyLoss()
 		self.soft_criterion = nn.BCEWithLogitsLoss()
 		self.update_count = 0
@@ -324,7 +282,7 @@ class ERM(Algorithm):
 		prototype_logits = self.network[1](self.prototype_net.prototype)
 		_, prototype_predicted_classes = torch.max(prototype_logits, 1)
 
-		if self.update_count > self.checkpoint_freq:
+		if self.update_count > self.warm_up:
 			self.prototype_net.update_label(prototype_predicted_classes)
 		
 			if self.smooth > 0.0:
@@ -338,20 +296,12 @@ class ERM(Algorithm):
 		softmax_prototype = nn.Softmax(dim=1)(predicted_prototype)
 			
 		# Feature regularization via contrastive learning -> maximun I(g(X),X) for each source domains	
-		if self.pcl_type == 1:
-			for d_index in range(self.n_domain_classes): 
-				normed_domain_features = features[self.batch_size*d_index:self.batch_size*(d_index+1),:]
-				domain_class_labels = tr_labels[self.batch_size*d_index:self.batch_size*(d_index+1)]
-				loss_info = self.maxinfo_loss(normed_domain_features, domain_class_labels, self.classifier.classifier.weight)
-				total_loss += self.maxinfo_weight * loss_info / self.n_domain_classes
-		else:
-			for d_index in range(self.n_domain_classes): 
-				normed_domain_features = F.normalize(features[self.batch_size*d_index:self.batch_size*(d_index+1),:], dim=1)
-				domain_class_labels = tr_labels[self.batch_size*d_index:self.batch_size*(d_index+1)]
-				loss_info = self.proxy_loss(normed_domain_features, domain_class_labels, F.normalize(self.classifier.classifier.weight, dim=1))
-				total_loss += self.maxinfo_weight * loss_info / self.n_domain_classes
-
-
+		for d_index in range(self.n_domain_classes): 
+			normed_domain_features = features[self.batch_size*d_index:self.batch_size*(d_index+1),:]
+			domain_class_labels = tr_labels[self.batch_size*d_index:self.batch_size*(d_index+1)]
+			loss_info = self.maxinfo_loss(normed_domain_features, domain_class_labels, self.classifier.classifier.weight)
+			total_loss += self.maxinfo_weight * loss_info / self.n_domain_classes
+	
 		
 		# Sub-space projetion via Wasserstein with different metric
 		for d_index in range(self.n_domain_classes): 
@@ -375,13 +325,13 @@ class ERM(Algorithm):
 			disc_input = GradReverse.apply(features[self.batch_size*d_index:self.batch_size*(d_index+1)], self.alpha) + self.subspace_embeddings(sub_space_idx)
 			
 
-			if self.update_count > self.checkpoint_freq:
+			if self.update_count > self.warm_up:
 				domain_logit =  self.discriminator(disc_input)
 			else:
 				domain_logit =  self.discriminator(disc_input.detach())
 			domain_loss = F.cross_entropy(domain_logit, tr_domain_labels[self.batch_size*d_index:self.batch_size*(d_index+1)], reduction='none')
 
-			if domain_loss.mean().item() > self.clip_disc and self.update_count > self.checkpoint_freq:
+			if domain_loss.mean().item() > self.clip_disc and self.update_count > self.warm_up:
 				domain_logit =  self.discriminator(disc_input.detach())
 				domain_loss = F.cross_entropy(domain_logit, tr_domain_labels[self.batch_size*d_index:self.batch_size*(d_index+1)], reduction='none')
 
@@ -412,10 +362,5 @@ class ERM(Algorithm):
 		else:
 			y = F.linear(F.normalize(z, dim=1), F.normalize(average_prototype,  dim=1))
 		return y
-
-	
-	
-	
-
 
 

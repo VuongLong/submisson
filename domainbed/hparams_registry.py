@@ -20,8 +20,20 @@ def _hparams(algorithm, dataset, random_state):
     hparams["optimizer"] = ("adam", "adam")
 
     hparams["freeze_bn"] = (True, True)
-    hparams["pretrained"] = (True, True)  # only for ResNet
-    #hparams["pretrained"] = (False, False)
+    #hparams["pretrained"] = (True, True)  # only for ResNet
+    hparams["pretrained"] = (False, False)
+
+    hparams['disc_weight'] = (0.01, random_state.choice([0.01, 0.05, 0.1]))
+    hparams['clip_disc'] = (50, random_state.choice([50,100]))
+
+    hparams['warm_up'] = (300, random_state.choice([300, 500, 1000]))
+    hparams['smooth'] = (0.5, random_state.choice([0.1, 0.5, 1.0]))
+    hparams['maxinfo_weight'] = (0.1, random_state.choice([0.01, 0.1, 0.5]))
+    hparams['ot_weight'] = (0.1, random_state.choice([0.01, 0.1, 0.5]))
+    hparams['prototype_per_class'] = (16, random_state.choice([4, 8, 16, 32]))
+    hparams["mlp_width"] = (256, int(2 ** random_state.uniform(6, 10)))
+    hparams["mlp_depth"] = (3, int(random_state.choice([3, 4, 5])))
+    hparams["mlp_dropout"] = (0.5, random_state.choice([0.0, 0.1, 0.5]))
 
     if dataset not in SMALL_IMAGES:
         hparams["lr"] = (5e-5, 10 ** random_state.uniform(-5, -3.5))
@@ -157,4 +169,3 @@ def random_hparams(algorithm, dataset, seed):
     random_state = np.random.RandomState(seed)
     return {a: c for a, (b, c) in _hparams(algorithm, dataset, random_state).items()}
 
-    # CUDA_VISIBLE_DEVICES=3 python train_all.py PACS0 --dataset PACS --deterministic --trial_seed 0 --checkpoint_freq 300 --data_dir /home/long/data/DomainBed --algorithm IRM --run_name IRM_NOPLC_trial0_0-0

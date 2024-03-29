@@ -298,9 +298,7 @@ def train(test_envs, args, hparams, n_steps, checkpoint_freq, logger, writer, ta
             logger.warning(f"Update SWAD BN statistics for {n_steps} steps ...")
             swa_utils.update_bn(train_minibatches_iterator, swad_algorithm, n_steps)
 
-        # import pdb; pdb.set_trace()
 
-        # swad_algorithm[-1] = algorithm[-1]
         swad_algorithm.module.network[2]=algorithm.network[2]
         swad_algorithm = swad_algorithm.module
         logger.warning("Evaluate SWAD ...")

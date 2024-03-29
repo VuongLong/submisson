@@ -67,7 +67,6 @@ class LossValley(SWADBase):
 
         self.converge_Q = deque(maxlen=n_converge)
         self.smooth_Q = deque(maxlen=n_tolerance)
-        # import pdb; pdb.set_trace()
 
         self.final_model = None
 
