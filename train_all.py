@@ -56,7 +56,7 @@ def main():
     parser.add_argument("--maxinfo_weight", type=float, default=0.1)
     parser.add_argument("--ot_weight", type=float, default=0.1)
     parser.add_argument("--smooth", type=float, default=0.5)
-    parser.add_argument("--pcl_type", type=int, default=1)
+    parser.add_argument("--pcl_type", type=int, default=0)
     parser.add_argument("--run_name", type=str, default=None, help="Name of save folder")
     parser.add_argument("--pretrained", action="store_true", help="")
     parser.add_argument("--no_swad", action="store_true", help="Not using SWAD, default is using swad")
@@ -161,7 +161,6 @@ def main():
     logger.nofmt("")
 
     n_steps = args.steps or dataset.N_STEPS
-    n_steps = 600
     checkpoint_freq = args.checkpoint_freq or dataset.CHECKPOINT_FREQ
     logger.info(f"n_steps = {n_steps}")
     logger.info(f"checkpoint_freq = {checkpoint_freq}")
