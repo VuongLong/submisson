@@ -27,7 +27,6 @@ def _hparams(algorithm, dataset, random_state):
     hparams['clip_disc'] = (50, random_state.choice([50,100]))
 
     hparams['warm_up'] = (300, random_state.choice([300, 500, 1000]))
-    hparams['smooth'] = (0.5, random_state.choice([0.1, 0.5, 1.0]))
     hparams['maxinfo_weight'] = (0.1, random_state.choice([0.01, 0.1, 0.5]))
     hparams['ot_weight'] = (0.1, random_state.choice([0.01, 0.1, 0.5]))
     hparams['prototype_per_class'] = (16, random_state.choice([4, 8, 16, 32]))

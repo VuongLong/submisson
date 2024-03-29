@@ -137,38 +137,29 @@ class Prototype(nn.Module):
 	def update_label(self, predicted_classes):
 		self.labels = predicted_classes
 
-	def prototype_interpolation(self, prototype_logits):
-		permutation = torch.randperm(self.num_embed)
-		weight = torch.FloatTensor(self.num_embed).uniform_(0, 1).unsqueeze(-1).to(self.prototype.device)
-		combine = weight*self.prototype[permutation] + (1- weight)*self.prototype
-		label_combine = weight*prototype_logits[permutation] + (1-weight)*prototype_logits
-		label_combine = F.softmax(label_combine, -1)
-		return combine, label_combine
 
 class MaxInfo(nn.Module):
-	
-	def __init__(self, num_classes, scale=7):
+
+	def __init__(self, num_classes, scale=0.07):
 		super(MaxInfo, self).__init__()
 		self.soft_plus = nn.Softplus()
 		self.label = torch.LongTensor([i for i in range(num_classes)])
-		self.scale = scale
+		self.scale = 1 / scale
 	
 	def forward(self, feature, target, proxy):
-
 		pred = F.linear(feature, proxy)  # (N, C)
-		featuremat = torch.matmul(feature, feature.transpose(1, 0))  # (N, N)
-		pred = F.normalize(pred, dim=-1)*proxy.shape[0]
-		featuremat = F.normalize(featuremat, dim=-1)*feature.shape[0]
-
 		label = (self.label.unsqueeze(1).to(feature.device) == target.unsqueeze(0))  # (C, N)
 		pred = torch.masked_select(pred.transpose(1, 0), label)  # N,
-		pred = pred.unsqueeze(1)  # (N, 1)
-		label_matrix = target.unsqueeze(1) == target.unsqueeze(0)  # (N, N)
-		featuremat = featuremat * ~label_matrix  # get negative matrix
-		featuremat = featuremat.masked_fill(featuremat < 1e-6, -np.inf)  # (N, N)
 		
-		logits = torch.cat([pred, featuremat], dim=1)  # (N, 1+N)
-		label = torch.zeros(logits.size(0), dtype=torch.long).to(featuremat.device)
+		pred = pred.unsqueeze(1)  # (N, 1)
+		
+		feature = torch.matmul(feature, feature.transpose(1, 0))  # (N, N)
+		label_matrix = target.unsqueeze(1) == target.unsqueeze(0)  # (N, N)
+		feature = feature * ~label_matrix  # get negative matrix
+		feature = feature.masked_fill(feature < 1e-6, -np.inf)  # (N, N)
+		
+		logits = torch.cat([pred, feature], dim=1)  # (N, 1+N)
+		label = torch.zeros(logits.size(0), dtype=torch.long).to(feature.device)
 		loss = F.nll_loss(F.log_softmax(self.scale * logits, dim=1), label)
 		
 		return loss
@@ -189,7 +180,6 @@ class ERM(Algorithm):
 		self.batch_size = hparams['batch_size']
 
 		self.warm_up = hparams['warm_up']
-		self.smooth = hparams['smooth']
 		self.disc_weight = hparams['disc_weight']
 		self.maxinfo_weight = hparams['maxinfo_weight']
 		self.ot_weight = hparams['ot_weight']
@@ -233,7 +223,6 @@ class ERM(Algorithm):
 
 		self.maxinfo_loss = MaxInfo(num_classes)
 		self.criterion = nn.CrossEntropyLoss()
-		self.soft_criterion = nn.BCEWithLogitsLoss()
 		self.update_count = 0
 
 
@@ -285,22 +274,19 @@ class ERM(Algorithm):
 		# Assign labels to prototypes
 		if self.update_count > self.warm_up:
 			self.prototype_net.update_label(prototype_predicted_classes)
-			mix_prototype, mix_label = self.prototype_net.prototype_interpolation(prototype_logits)
-			p_mix_logits = self.network[1](mix_prototype)
-			mix_loss = self.soft_criterion(p_mix_logits, mix_label)
-			total_loss += self.smooth * mix_loss
 		
 		predicted_prototype = F.linear(features, self.prototype_net.prototype)
 		softmax_prototype = nn.Softmax(dim=1)(predicted_prototype)
 			
 		# Feature regularization via contrastive learning -> maximun I(g(X),X) for each source domains	
 		for d_index in range(self.n_domain_classes): 
-			normed_domain_features = features[self.batch_size*d_index:self.batch_size*(d_index+1),:]
+			normed_domain_features = F.normalize(features[self.batch_size*d_index:self.batch_size*(d_index+1),:], dim=1)
 			domain_class_labels = tr_labels[self.batch_size*d_index:self.batch_size*(d_index+1)]
-			loss_info = self.maxinfo_loss(normed_domain_features, domain_class_labels, self.classifier.classifier.weight)
+			loss_info = self.maxinfo_loss(normed_domain_features, domain_class_labels, F.normalize(self.classifier.classifier.weight, dim=1))
 			total_loss += self.maxinfo_weight * loss_info / self.n_domain_classes
-	
-		
+			
+				
+
 		# Sub-space projetion via Wasserstein with different metric
 		for d_index in range(self.n_domain_classes): 
 			
