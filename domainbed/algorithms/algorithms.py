@@ -282,15 +282,13 @@ class ERM(Algorithm):
 		prototype_logits = self.network[1](self.prototype_net.prototype)
 		_, prototype_predicted_classes = torch.max(prototype_logits, 1)
 
+		# Assign labels to prototypes
 		if self.update_count > self.warm_up:
 			self.prototype_net.update_label(prototype_predicted_classes)
-		
-			if self.smooth > 0.0:
-
-				mix_prototype, mix_label = self.prototype_net.prototype_interpolation(prototype_logits)
-				p_mix_logits = self.network[1](mix_prototype)
-				mix_loss = self.soft_criterion(p_mix_logits, mix_label)
-				total_loss += self.smooth * mix_loss
+			mix_prototype, mix_label = self.prototype_net.prototype_interpolation(prototype_logits)
+			p_mix_logits = self.network[1](mix_prototype)
+			mix_loss = self.soft_criterion(p_mix_logits, mix_label)
+			total_loss += self.smooth * mix_loss
 		
 		predicted_prototype = F.linear(features, self.prototype_net.prototype)
 		softmax_prototype = nn.Softmax(dim=1)(predicted_prototype)

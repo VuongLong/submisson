@@ -20,8 +20,8 @@ def _hparams(algorithm, dataset, random_state):
     hparams["optimizer"] = ("adam", "adam")
 
     hparams["freeze_bn"] = (True, True)
-    #hparams["pretrained"] = (True, True)  # only for ResNet
-    hparams["pretrained"] = (False, False)
+    hparams["pretrained"] = (True, True)  # only for ResNet
+    #hparams["pretrained"] = (False, False)
 
     hparams['disc_weight'] = (0.01, random_state.choice([0.01, 0.05, 0.1]))
     hparams['clip_disc'] = (50, random_state.choice([50,100]))
