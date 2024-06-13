@@ -195,7 +195,9 @@ class ERM(Algorithm):
 		# Define Prototypes
 		self.num_embed = self.n_classes * self.prototype_per_class
 		self.prototype_net = Prototype(self.num_embed, self.n_classes, self.prototype_per_class, self.feature_dim)
+		self.scale = torch.tensor(-self.ot_weight, requires_grad=False)
 
+		
 		# Define Disciminator for Prototype_DANN
 		self.alpha = torch.tensor(self.disc_weight, requires_grad=False)
 		self.discriminator = networks.MLP(self.feature_dim, self.n_domain_classes, hparams)
@@ -264,7 +266,7 @@ class ERM(Algorithm):
 		env_logits = self.invariant_classifier(torch.cat([features, embeddings], 1))
 		env_loss = self.criterion(env_logits, tr_labels)
 		inv_loss = (cls_loss - env_loss) ** 2 
-		total_loss += inv_loss
+		total_loss += env_loss + inv_loss
 
 
 		# Test whether prototype can be used to make predition
@@ -284,7 +286,6 @@ class ERM(Algorithm):
 			domain_class_labels = tr_labels[self.batch_size*d_index:self.batch_size*(d_index+1)]
 			loss_info = self.maxinfo_loss(normed_domain_features, domain_class_labels, F.normalize(self.classifier.classifier.weight, dim=1))
 			total_loss += self.maxinfo_weight * loss_info / self.n_domain_classes
-			
 				
 
 		# Sub-space projetion via Wasserstein with different metric
@@ -297,18 +298,14 @@ class ERM(Algorithm):
 			prototype_feature, prototype_weight = self.prototype_net(domain_unique_class)
 
 			sample_weight = torch.ones(domain_features.shape[0]).to(device) / domain_features.shape[0]
-			
-
-			cost_matrix = self.cosine_similarity(domain_features, prototype_feature)
-			ot_cost = ot.emd2(sample_weight, prototype_weight, cost_matrix, numItermax=500000, return_matrix=True)
+			cost_matrix = self.cosine_similarity(GradReverse.apply(domain_features, self.scale), prototype_feature)
+			ot_cost = ot.emd2(sample_weight, prototype_weight.detach(), cost_matrix, numItermax=500000, return_matrix=True)
 			total_loss += self.ot_weight * ot_cost[0]
 			
 
 			# sub-space balanced alignment via Prototype-DANN
-			sub_space_idx = cost_matrix.min(1)[1][:self.batch_size]
+			sub_space_idx = cost_matrix.min(1)[1]
 			disc_input = GradReverse.apply(features[self.batch_size*d_index:self.batch_size*(d_index+1)], self.alpha) + self.subspace_embeddings(sub_space_idx)
-			
-
 			if self.update_count > self.warm_up:
 				domain_logit =  self.discriminator(disc_input)
 			else:
@@ -319,14 +316,12 @@ class ERM(Algorithm):
 				domain_logit =  self.discriminator(disc_input.detach())
 				domain_loss = F.cross_entropy(domain_logit, tr_domain_labels[self.batch_size*d_index:self.batch_size*(d_index+1)], reduction='none')
 
-			y_counts = F.one_hot(sub_space_idx).sum(dim=0)
-			balance_weight = 1. / (y_counts[sub_space_idx]).float()
 			softmax_output = softmax_prototype[self.batch_size*d_index:self.batch_size*(d_index+1)]
 			entropy = Entropy(softmax_output)
 			entropy.register_hook(grl_hook(self.disc_weight))
 			entropy = 1.0+torch.exp(-entropy)
 			weight = entropy / torch.sum(entropy).detach().item()
-			domain_loss = (balance_weight * weight * domain_loss).sum()
+			domain_loss = (weight * domain_loss).sum()
 			
 			total_loss += domain_loss / self.n_domain_classes
 			_, predicted_domain = torch.max(domain_logit, 1)

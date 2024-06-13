@@ -1,18 +1,4 @@
-# SWAD: Domain Generalization by Seeking Flat Minima (NeurIPS'21)
-
-Official PyTorch implementation of [SWAD: Domain Generalization by Seeking Flat Minima](https://arxiv.org/abs/2102.08604).
-
-Junbum Cha, Sanghyuk Chun, Kyungjae Lee, Han-Cheol Cho, Seunghyun Park, Yunsung Lee, Sungrae Park.
-
-<p align="center">
-    <img src="./assets/method.png" width="90%" />
-</p>
-
-Note that this project is built upon [DomainBed@3fe9d7](https://github.com/facebookresearch/DomainBed/tree/3fe9d7bb4bc14777a42b3a9be8dd887e709ec414).
-
-<p align="center">
-    <img src="./assets/fig1.png" width="90%" />
-</p>
+# BAIR: Best Attainable Invariant Representation for DG
 
 
 ## Preparation
@@ -114,9 +100,9 @@ python train_all.py TR2 --dataset TerraIncognita --deterministic --trial_seed 2 
 - DomainNet
 
 ```
-python train_all.py DN0 --dataset DomainNet --deterministic --trial_seed 0 --checkpoint_freq 3000 --data_dir /my/datasets/path --algorithm ERM --pretrained --prototype_per_class 4
-python train_all.py DN1 --dataset DomainNet --deterministic --trial_seed 1 --checkpoint_freq 3000 --data_dir /my/datasets/path --algorithm ERM --pretrained --prototype_per_class 4
-python train_all.py DN2 --dataset DomainNet --deterministic --trial_seed 2 --checkpoint_freq 3000 --data_dir /my/datasets/path --algorithm ERM --pretrained --prototype_per_class 4
+python train_all.py DN0 --dataset DomainNet --deterministic --trial_seed 0 --checkpoint_freq 300 --data_dir /my/datasets/path --algorithm ERM --pretrained --prototype_per_class 4
+python train_all.py DN1 --dataset DomainNet --deterministic --trial_seed 1 --checkpoint_freq 300 --data_dir /my/datasets/path --algorithm ERM --pretrained --prototype_per_class 4
+python train_all.py DN2 --dataset DomainNet --deterministic --trial_seed 2 --checkpoint_freq 300 --data_dir /my/datasets/path --algorithm ERM --pretrained --prototype_per_class 4
 ```
 
 ## License
