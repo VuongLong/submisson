@@ -37,24 +37,26 @@ PIL: 8.0.1
 python train_all.py exp_name --dataset PACS --data_dir /my/datasets/path  --algorithm ERM --pretrained
 ```
 
-Experiment results are reported as a table. In the table, the row `SWAD` indicates out-of-domain accuracy from SWAD.
+Experiment results are reported as a table. In the table, the row `SWAD` and `SWAD_prototype` indicate out-of-domain accuracy from BAIR and BAIR using prototype to make prediction respectively.
+
 The row `SWAD (inD)` indicates in-domain validation accuracy.
 
 Example results:
 ```
-+------------+--------------+---------+---------+---------+---------+
-| Selection  | art_painting | cartoon |  photo  |  sketch |   Avg.  |
-+------------+--------------+---------+---------+---------+---------+
-|   oracle   |   82.245%    | 85.661% | 97.530% | 83.461% | 87.224% |
-|    iid     |   87.919%    | 78.891% | 96.482% | 78.435% | 85.432% |
-|    last    |   82.306%    | 81.823% | 95.135% | 82.061% | 85.331% |
-| last (inD) |   95.807%    | 95.291% | 96.306% | 95.477% | 95.720% |
-| iid (inD)  |   97.275%    | 96.619% | 96.696% | 97.253% | 96.961% |
-|    SWAD    |   89.750%    | 82.942% | 97.979% | 81.870% | 88.135% |
-| SWAD (inD) |   97.713%    | 97.649% | 97.316% | 98.074% | 97.688% |
-+------------+--------------+---------+---------+---------+---------+
++----------------+--------------+---------+---------+---------+---------+
+|   Selection    | art_painting | cartoon |  photo  |  sketch |   Avg.  |
++----------------+--------------+---------+---------+---------+---------+
+|     oracle     |   87.065%    | 83.422% | 96.856% | 80.089% | 86.858% |
+|      iid       |   87.065%    | 81.077% | 94.686% | 77.576% | 85.101% |
+|      last      |   83.160%    | 83.422% | 96.183% | 75.954% | 84.680% |
+|   last (inD)   |   96.390%    | 95.880% | 95.537% | 94.754% | 95.640% |
+|   iid (inD)    |   97.331%    | 97.040% | 95.959% | 96.601% | 96.733% |
+|      SWAD      |   89.445%    | 84.168% | 98.054% | 83.302% | 88.742% |
+|   SWAD (inD)   |   97.783%    | 97.906% | 97.163% | 97.984% | 97.709% |
+| SWAD_prototype |   90.055%    | 83.582% | 98.129% | 83.524% | 88.822% |
++----------------+--------------+---------+---------+---------+---------+
 ```
-In this example, the DG performance of SWAD for PACS dataset is 88.135%.
+In this example, the DG performance of BAIR and BAIR-prototype for PACS dataset are 88.742% and 88.822%.
 
 If you set `indomain_test` option to `True`, the validation set is splitted to validation and test sets,
 and the `(inD)` keys become to indicate in-domain test accuracy.

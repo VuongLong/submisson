@@ -24,12 +24,12 @@ def _hparams(algorithm, dataset, random_state):
     #hparams["pretrained"] = (False, False)
 
     hparams['disc_weight'] = (0.01, random_state.choice([0.01, 0.05, 0.1]))
-    hparams['clip_disc'] = (50, random_state.choice([50,100]))
+    hparams['clip_disc'] = (10, random_state.choice([50,100]))
 
     hparams['warm_up'] = (300, random_state.choice([300, 500, 1000]))
     hparams['maxinfo_weight'] = (0.1, random_state.choice([0.01, 0.1, 0.5]))
     hparams['ot_weight'] = (0.1, random_state.choice([0.01, 0.1, 0.5]))
-    hparams['prototype_per_class'] = (16, random_state.choice([4, 8, 16, 32]))
+    hparams['prototype_per_class'] = (32, random_state.choice([4, 8, 16, 32]))
     hparams["mlp_width"] = (256, int(2 ** random_state.uniform(6, 10)))
     hparams["mlp_depth"] = (3, int(random_state.choice([3, 4, 5])))
     hparams["mlp_dropout"] = (0.5, random_state.choice([0.0, 0.1, 0.5]))

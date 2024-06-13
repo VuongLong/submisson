@@ -118,19 +118,19 @@ class GradReverse(torch.autograd.Function):
 
 
 class Prototype(nn.Module):
-	def __init__(self, num_embed, n_classes, prototype_per_class, feature_dim=2048):
+	def __init__(self, num_embed, n_classes, n_domains, prototype_per_class, feature_dim=2048):
 		super(Prototype, self).__init__()
 		self.n_classes = n_classes
 		self.num_embed = num_embed
-		self.weight = nn.Parameter(torch.ones(num_embed)/num_embed)
+		self.weight = nn.Parameter(torch.ones(n_domains, num_embed)/num_embed)
 		self.prototype = nn.Parameter(torch.ones(num_embed, feature_dim))
 		self.prototype.data.uniform_(-1.0 /  num_embed, 1.0 /  num_embed)
 		self.register_buffer('labels', torch.tensor(range(n_classes)).unsqueeze(-1).repeat(1, prototype_per_class).reshape(-1))
 
-	def forward(self, batch_classes):
+	def forward(self, batch_classes, d_index=0):
 		mask = (self.labels.unsqueeze(1)==batch_classes.unsqueeze(0)).sum(1) > 0
 		selected_prototypes = self.prototype[torch.where(mask > 0)]
-		selected_prototype_weight = self.weight[torch.where(mask > 0)]
+		selected_prototype_weight = self.weight[d_index][torch.where(mask > 0)]
 		selected_prototype_weight = nn.Softmax(dim=0)(selected_prototype_weight)
 		return selected_prototypes, selected_prototype_weight
 	
@@ -188,15 +188,17 @@ class ERM(Algorithm):
 
 		self.classifier = Classifier(feature_dim=self.featurizer.n_outputs, 
 									 n_classes=self.n_classes)
-		self.invariant_classifier = Classifier(feature_dim=self.featurizer.n_outputs+1, 
+		self.env_classifier = Classifier(feature_dim=self.featurizer.n_outputs, 
 									 n_classes=self.n_classes)
+		self.domain_embeddings = nn.Embedding(self.n_domain_classes, self.feature_dim)
+
 
 		
 		# Define Prototypes
 		self.num_embed = self.n_classes * self.prototype_per_class
-		self.prototype_net = Prototype(self.num_embed, self.n_classes, self.prototype_per_class, self.feature_dim)
+		self.prototype_net = Prototype(self.num_embed, self.n_classes, self.n_domain_classes, self.prototype_per_class, self.feature_dim)
 		self.scale = torch.tensor(-self.ot_weight, requires_grad=False)
-
+		self.subspace_embeddings = nn.Embedding(self.num_embed, self.feature_dim)
 		
 		# Define Disciminator for Prototype_DANN
 		self.alpha = torch.tensor(self.disc_weight, requires_grad=False)
@@ -208,8 +210,9 @@ class ERM(Algorithm):
 		
 		self.optimizer = torch.optim.Adam(
 			list(self.prototype_net.parameters())+
+			list(self.domain_embeddings.parameters())+
 			list(self.featurizer.parameters())+
-			list(self.invariant_classifier.parameters())+
+			list(self.env_classifier.parameters())+
 			list(self.classifier.parameters()),
 			lr=self.hparams["lr"], 
 			weight_decay=self.hparams["weight_decay"])
@@ -261,12 +264,14 @@ class ERM(Algorithm):
 		
 
 		# Enforcing Invariant Prediction Loss (IRM)
-		self.domain_indx = [torch.full((self.batch_size, 1), indx).to(device) for indx in range(self.n_domain_classes)]
-		embeddings = torch.cat([curr_dom_embed for curr_dom_embed in self.domain_indx]).to(device)
-		env_logits = self.invariant_classifier(torch.cat([features, embeddings], 1))
+		# self.domain_indx = [torch.full((self.batch_size, 1), indx).to(device) for indx in range(self.n_domain_classes)]
+		# embeddings = torch.cat([curr_dom_embed for curr_dom_embed in self.domain_indx]).to(device)
+		# env_logits = self.env_classifier(torch.cat([features, embeddings], 1))
+		
+		env_logits = self.env_classifier(features + self.domain_embeddings(tr_domain_labels))
 		env_loss = self.criterion(env_logits, tr_labels)
 		inv_loss = (cls_loss - env_loss) ** 2 
-		total_loss += env_loss + inv_loss
+		# total_loss += env_loss + inv_loss
 
 
 		# Test whether prototype can be used to make predition
@@ -295,32 +300,35 @@ class ERM(Algorithm):
 			batch_d_labels = tr_labels[self.batch_size*d_index:self.batch_size*(d_index+1)]
 			domain_unique_class = batch_d_labels.unique()
 			
-			prototype_feature, prototype_weight = self.prototype_net(domain_unique_class)
+			prototype_feature, prototype_weight = self.prototype_net(domain_unique_class, d_index)
 
 			sample_weight = torch.ones(domain_features.shape[0]).to(device) / domain_features.shape[0]
 			cost_matrix = self.cosine_similarity(GradReverse.apply(domain_features, self.scale), prototype_feature)
-			ot_cost = ot.emd2(sample_weight, prototype_weight.detach(), cost_matrix, numItermax=500000, return_matrix=True)
+			ot_cost = ot.emd2(sample_weight, GradReverse.apply(prototype_weight, self.scale), cost_matrix, numItermax=500000, return_matrix=True)
 			total_loss += self.ot_weight * ot_cost[0]
 			
 
 			# sub-space balanced alignment via Prototype-DANN
 			sub_space_idx = cost_matrix.min(1)[1]
-			disc_input = GradReverse.apply(features[self.batch_size*d_index:self.batch_size*(d_index+1)], self.alpha) + self.subspace_embeddings(sub_space_idx)
-			if self.update_count > self.warm_up:
-				domain_logit =  self.discriminator(disc_input)
-			else:
-				domain_logit =  self.discriminator(disc_input.detach())
-			domain_loss = F.cross_entropy(domain_logit, tr_domain_labels[self.batch_size*d_index:self.batch_size*(d_index+1)], reduction='none')
-
-			if domain_loss.mean().item() > self.clip_disc and self.update_count > self.warm_up:
-				domain_logit =  self.discriminator(disc_input.detach())
-				domain_loss = F.cross_entropy(domain_logit, tr_domain_labels[self.batch_size*d_index:self.batch_size*(d_index+1)], reduction='none')
-
 			softmax_output = softmax_prototype[self.batch_size*d_index:self.batch_size*(d_index+1)]
 			entropy = Entropy(softmax_output)
 			entropy.register_hook(grl_hook(self.disc_weight))
 			entropy = 1.0+torch.exp(-entropy)
 			weight = entropy / torch.sum(entropy).detach().item()
+			disc_input = GradReverse.apply(features[self.batch_size*d_index:self.batch_size*(d_index+1)], self.alpha) + self.subspace_embeddings(sub_space_idx)
+			if self.update_count > self.warm_up:
+				domain_logit =  self.discriminator(disc_input)
+			else:
+				domain_logit =  self.discriminator(disc_input.detach())
+				weight = weight.detach()
+
+			domain_loss = F.cross_entropy(domain_logit, tr_domain_labels[self.batch_size*d_index:self.batch_size*(d_index+1)], reduction='none')
+
+			if domain_loss.mean().item() > self.clip_disc and self.update_count > self.warm_up:
+				domain_logit =  self.discriminator(disc_input.detach())
+				domain_loss = F.cross_entropy(domain_logit, tr_domain_labels[self.batch_size*d_index:self.batch_size*(d_index+1)], reduction='none')
+				weight = weight.detach()
+			
 			domain_loss = (weight * domain_loss).sum()
 			
 			total_loss += domain_loss / self.n_domain_classes

@@ -302,7 +302,7 @@ def train(test_envs, args, hparams, n_steps, checkpoint_freq, logger, writer, ta
         swad_algorithm.module.network[2]=algorithm.network[2]
         swad_algorithm = swad_algorithm.module
         logger.warning("Evaluate SWAD ...")
-        accuracies, summaries = evaluator.evaluate(swad_algorithm, model_type='swad')
+        accuracies, summaries = evaluator.evaluate(swad_algorithm, model_type='normal')
         results = {**summaries, **accuracies}
         # start = swad_algorithm.start_step
         # end = swad_algorithm.end_step
@@ -312,6 +312,11 @@ def train(test_envs, args, hparams, n_steps, checkpoint_freq, logger, writer, ta
 
         ret["SWAD"] = results["test_in"]
         ret["SWAD (inD)"] = results[in_key]
+
+        accuracies, summaries = evaluator.evaluate(swad_algorithm, model_type='swad')
+        results = {**summaries, **accuracies}
+        ret["SWAD_prototype"] = results["test_in"]
+
 
     for k, acc in ret.items():
         logger.info(f"{k} = {acc:.3%}")
