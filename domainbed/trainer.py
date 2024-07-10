@@ -51,10 +51,10 @@ def set_test_samples_labels(meta_filenames):
 
 
 class Trainer:
-	def __init__(self, hparams, dataset_configs, device, bash_args):
+	def __init__(self, hparams, dataset_configs, device, args):
 		self.dataset_configs = dataset_configs
 		self.device = device
-		self.bash_args = bash_args
+		self.args = args
 		# Read data list files and split Train-Val with 80% train, 20% test
 		(
 			src_tr_sample_paths,
@@ -160,14 +160,14 @@ class Trainer:
 			inputs = {**batches, "step": iteration}
 			step_vals = self.algorithm.update(**inputs)
 			
-			if iteration > self.dataset_configs.iterations * self.bash_args.start_swad:
+			if iteration > self.dataset_configs.iterations * self.args.start_swad:
 				# Update swad average model
 				self.swad_algorithm.update_parameters(self.algorithm.network, step=iteration)
 
 				if iteration % self.dataset_configs.step_eval == 0 or iteration == self.dataset_configs.iterations - 1:
 					val_acc, val_loss = self.evaluate(iteration)
 
-					if iteration > self.dataset_configs.iterations * self.bash_args.start_swad:
+					if iteration > self.dataset_configs.iterations * self.args.start_swad:
 						self.swad_valley.update_and_evaluate(self.swad_algorithm, val_acc, val_loss)
 						if self.swad_valley.dead_valley:
 							break
@@ -182,6 +182,8 @@ class Trainer:
 		self.ret["classifer weight"] = test_acc
 
 		self.histogram()
+		self.save_model(final_swad, 'swad')
+		self.save_model(self.algorithm.network, 'last')
 		return self.ret
 
 	def histogram(self, data=None, labels=None):
@@ -264,8 +266,6 @@ class Trainer:
 		print(print_out)
 		print("-----------------------------------")
 		
-		# import pdb; pdb.set_trace()
-
 		if model_type == 'swad':
 			print("-----------------------------------")
 			print_out_swad = "{} set: SWAD-encoder + Last-protype Accuracy: {}/{} {:.2f}%, {}".format(
@@ -276,23 +276,6 @@ class Trainer:
 			print(print_out_swad)
 			print("-----------------------------------")
 			self.ret["prototype"] = swad_norm_ave_prototype_n_class_corrected / len(loader.dataset)
-			
-			# name = '{}_{}_ot_{}_smooth_{}_pcl-type_{}_{}'.format(self.dataset_configs.dataset, 
-			# 	str(self.bash_args.prototype_per_class), 
-			# 	str(self.bash_args.ot_weight), 
-			# 	str(self.bash_args.smooth), 
-			# 	str(self.bash_args.pcl_weight), 
-			# 	str(self.bash_args.pcl_norm))
-
-			# f = open("algorithms/BAIR/results/no-pretrained_{}.txt".format(name), "a")
-			# f.write("{}, seed {}".format(self.dataset_configs.exp_name, self.bash_args.exp_idx))
-
-			# f.write('\n')
-			# f.write(print_out)
-			# f.write('\n')
-			# f.write(print_out_swad)
-			# f.write('\n')
-			# f.close()
 
 		return n_class_corrected / len(loader.dataset), total_classification_loss / len(loader.dataset)
 		
@@ -306,11 +289,13 @@ class Trainer:
 		if self.val_acc_max < val_acc:
 			self.val_acc_max = val_acc
 			self.corresponding_test = test_acc
-			# self.save_model(self.algorithm.network, 'corr')
+			self.save_model(self.algorithm.network, 'best_val')
+
 			
 		if self.test_acc_max < test_acc:
 			self.test_acc_max = test_acc
-			# self.save_model(self.algorithm.network, 'best')
+			self.save_model(self.algorithm.network, 'best_test')
+
 
 		print( "Best val: {:.2f}%, Corres: {:.2f}%, Best Test: {:.2f}%".format(
 			100.0 * self.val_acc_max, 100.0 * self.corresponding_test, 100.0 * self.test_acc_max))
@@ -323,3 +308,87 @@ class Trainer:
 		val_acc, _ = self.evaluate_loader(self.algorithm.network, test_type='Val')
 		test_acc, _ = self.evaluate_loader(self.algorithm.network, test_type='Test')
 		print("val: {}, Test: {}".format(val_acc, test_acc))
+
+
+	def save_model(self, network, name='best_model'):
+		if self.args.save_model_dir == '':
+			return
+		name = '{}_{}_{}_{}'.format(name, 
+				self.args.dataset, 
+				str(self.args.target), 
+				str(self.args.seed))
+		
+		torch.save({
+			'encoder_state_dict': network[0].state_dict(), 
+			'classifier_state_dict': network[1].state_dict(), 
+			'prototype_state_dict': network[2].state_dict()}, 
+			os.path.join(self.args.save_model_dir, f'{name}.pth'))
+
+
+	def load_model(self, ckpt):
+		state_dict = torch.load(ckpt, map_location=lambda storage, loc: storage)
+		encoder_state = state_dict["encoder_state_dict"]
+		classifier_state = state_dict["classifier_state_dict"]
+		prototype_state = state_dict["prototype_state_dict"]
+		self.algorithm.featurizer.load_state_dict(encoder_state)
+		self.algorithm.classifier.load_state_dict(classifier_state)
+		self.algorithm.prototype_net.load_state_dict(prototype_state)
+
+
+	def save_plot(self, plot_dir, name_folder=None):
+		self.network.eval()
+
+		feature_train, Y_train, Y_domain_train = [], [], []
+		feature_test, Y_test, Y_domain_test = [], [], []
+		mask_test = []
+
+		self.train_iter_loaders = []
+		with torch.no_grad():
+			for train_loader in self.train_loaders:
+
+				for iteration, (samples, labels, domain_labels) in enumerate(train_loader):
+					samples = samples.to(self.device)
+					labels = labels.to(self.device)
+					domain_labels = domain_labels.to(self.device)
+
+					features = self.algorithm.network[0](samples)
+					
+					feature_train += features.tolist()
+					Y_train += labels.tolist()
+					Y_domain_train += domain_labels.tolist()
+			print("Train dumped")
+			
+			for iteration, (samples, labels, domain_labels) in enumerate(self.test_loader):
+				samples, labels = samples.to(self.device), labels.to(self.device)
+				features = self.algorithm.network[0](samples)
+				feature_test += features.tolist()
+				Y_test += labels.tolist()
+				Y_domain_test += domain_labels.tolist()
+			print("Test dumped")
+
+		if not os.path.exists(plot_dir):
+			os.mkdir(plot_dir)
+		if name_folder is None:
+			name_folder = "{}_{}_seed_{}".format(self.args.dataset, self.args.target, self.args.seed)
+		fol_name = os.path.join(plot_dir, name_folder)
+		os.makedirs(fol_name, exist_ok=True)
+		print('Save at', fol_name)
+		with open(os.path.join(fol_name, "prototype.pkl"), "wb") as fp:
+			pickle.dump(self.network[2].prototype.tolist(), fp)
+
+		with open(os.path.join(fol_name, "class_weight.pkl"), "wb") as fp:
+			pickle.dump(self.network[1].classifier.weight.tolist(), fp)
+
+		with open(os.path.join(fol_name, "feature_train.pkl"), "wb") as fp:
+			pickle.dump(feature_train, fp)
+		with open(os.path.join(fol_name, "Y_train.pkl"), "wb") as fp:
+			pickle.dump(Y_train, fp)
+		with open(os.path.join(fol_name, "Y_domain_train.pkl"), "wb") as fp:
+			pickle.dump(Y_domain_train, fp)
+
+		with open(os.path.join(fol_name, "feature_test.pkl"), "wb") as fp:
+			pickle.dump(feature_test, fp)
+		with open(os.path.join(fol_name, "Y_test.pkl"), "wb") as fp:
+			pickle.dump(Y_test, fp)
+		with open(os.path.join(fol_name, "Y_domain_test.pkl"), "wb") as fp:
+			pickle.dump(Y_domain_test, fp)
