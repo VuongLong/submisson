@@ -41,7 +41,6 @@ if __name__ == "__main__":
 
 	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-
 	args = parser.parse_args()
 	with open('domainbed/configs/{}_{}.json'.format(args.dataset, args.target), "r") as inp:
 		dataset_configs = argparse.Namespace(**json.load(inp))
@@ -50,9 +49,9 @@ if __name__ == "__main__":
 	# setup hparams
 	hparams = hparams_registry.default_hparams(dataset_configs.algorithm, dataset_configs.dataset)
 
-
 	print(dataset_configs)
 	print(hparams)
+	
 	if args.ckpt == '':
 		fix_random_seed(int(args.seed))
 		trainer = Trainer(hparams, dataset_configs, device, args)
