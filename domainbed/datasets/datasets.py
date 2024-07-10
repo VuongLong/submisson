@@ -237,7 +237,7 @@ class OfficeHome(MultipleEnvironmentImageFolder):
     ENVIRONMENTS = ["A", "C", "P", "R"]
 
     def __init__(self, root):
-        self.dir = os.path.join(root, "office_home/")
+        self.dir = os.path.join(root, "OfficeHome/")
         super().__init__(self.dir)
 
 
@@ -246,5 +246,5 @@ class TerraIncognita(MultipleEnvironmentImageFolder):
     ENVIRONMENTS = ["L100", "L38", "L43", "L46"]
 
     def __init__(self, root):
-        self.dir = os.path.join(root, "terra_incognita/")
+        self.dir = os.path.join(root, "TerraInc/")
         super().__init__(self.dir)

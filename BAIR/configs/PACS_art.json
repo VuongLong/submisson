@@ -1,0 +1,22 @@
+{
+    "exp_name": "PACS_art",
+    "algorithm": "KEFI",
+    "model": "resnet50",
+    "feature_dim": 2048,
+    "dataset": "PACS",
+    "seed_value": 1,
+    "val_size": 0.2,
+    "src_data_path": "/home/shared/data/DomainBed/PACS/",
+    "src_train_meta_filenames":[
+        "data_list/PACS/photo_test_kfold.txt",
+        "data_list/PACS/cartoon_test_kfold.txt",
+        "data_list/PACS/sketch_test_kfold.txt"],
+    "target_test_meta_filenames": ["data_list/PACS/art_painting_test_kfold.txt"],
+    "n_classes": 7,
+    "n_domain_classes": 3,
+    "iterations": 5000,
+    "learning_rate": 0.00005,
+    "dropout_rate": 0.0,
+    "batch_size": 32,
+    "step_eval": 300
+}

@@ -1,0 +1,21 @@
+{
+    "exp_name": "VLCS_SUN",
+    "algorithm": "KEFI",
+    "model": "resnet50",
+    "feature_dim": 2048,
+    "dataset": "VLCS",
+    "seed_value": 1,
+    "val_size": 0.2,
+    "src_data_path": "/home/bta/Long/data/VLCS/",
+    "src_train_meta_filenames":["data_list/VLCS/LabelMe.txt",
+        "data_list/VLCS/Caltech101.txt",
+        "data_list/VLCS/VOC2007.txt"],
+    "target_test_meta_filenames": ["data_list/VLCS/SUN09.txt"],
+    "n_classes": 5,
+    "n_domain_classes": 3,
+    "iterations": 5000,
+    "learning_rate": 0.00005,
+    "dropout_rate": 0.0,
+    "batch_size": 32,
+    "step_eval": 300
+}

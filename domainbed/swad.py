@@ -82,7 +82,7 @@ class LossValley(SWADBase):
     def is_converged(self):
         return self.converge_step is not None
 
-    def update_and_evaluate(self, segment_swa, val_acc, val_loss, prt_fn):
+    def update_and_evaluate(self, segment_swa, val_acc, val_loss, prt_fn=None):
         if self.dead_valley:
             return
 
@@ -102,7 +102,6 @@ class LossValley(SWADBase):
             untilmin_segment_swa = self.converge_Q[min_idx]  # until-min segment swa.
             
             if min_idx == 0:
-                # import pdb; pdb.set_trace()
                 self.converge_step = self.converge_Q[0].end_step
                 self.final_model = swa_utils.AveragedModel(untilmin_segment_swa)
 
@@ -158,9 +157,9 @@ class LossValley(SWADBase):
 
     def get_final_model(self):
         if not self.is_converged:
-            self.evaluator.logger.error(
-                "Requested final model, but model is not yet converged; return last model instead"
-            )
+            # self.evaluator.logger.error(
+            #     "Requested final model, but model is not yet converged; return last model instead"
+            # )
             return self.converge_Q[-1].cuda()
 
         if not self.dead_valley:

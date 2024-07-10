@@ -1,0 +1,21 @@
+{
+    "exp_name": "OfficeHome_ClipArt",
+    "algorithm": "BAIR",
+    "model": "resnet50",
+    "feature_dim": 2048,
+    "dataset": "OfficeHome",
+    "seed_value": 1,
+    "val_size": 0.2,
+    "src_data_path": "domainbed/configs/data_list/",
+    "src_train_meta_filenames":["domainbed/configs/data_list/OfficeHome/Art.txt",
+        "domainbed/configs/data_list/OfficeHome/Product.txt",
+        "domainbed/configs/data_list/OfficeHome/RealWorld.txt"],
+    "target_test_meta_filenames": ["domainbed/configs/data_list/OfficeHome/Clipart.txt"],
+    "n_classes": 65,
+    "n_domain_classes": 3,
+    "iterations": 5000,
+    "learning_rate": 0.00005,
+    "dropout_rate": 0.0,
+    "batch_size": 32,
+    "step_eval": 300
+}

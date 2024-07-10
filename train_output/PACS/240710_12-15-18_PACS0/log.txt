@@ -1,0 +1,258 @@
+[37m[36mINFO[0m[0m 07/10 12:15:18 | Command :: train_all.py PACS0 --dataset PACS --deterministic --seed 0 --checkpoint_freq 300 --data_dir /home/shared/data/DomainBed --algorithm BAIR --pretrained
+Environment:
+	Python: 3.7.9
+	PyTorch: 1.13.1+cu117
+	Torchvision: 0.14.1+cu117
+	CUDA: 11.7
+[37m[36mINFO[0m[0m 07/10 12:15:18 | Command :: train_all.py PACS0 --dataset PACS --deterministic --seed 1 --checkpoint_freq 300 --data_dir /home/shared/data/DomainBed --algorithm BAIR --pretrained
+[37m[36mINFO[0m[0m 07/10 12:15:18 | Command :: train_all.py PACS0 --dataset PACS --deterministic --seed 2 --checkpoint_freq 300 --data_dir /home/shared/data/DomainBed --algorithm BAIR --pretrained
+Environment:
+Environment:
+	Python: 3.7.9
+	Python: 3.7.9
+	PyTorch: 1.13.1+cu117
+	PyTorch: 1.13.1+cu117
+	Torchvision: 0.14.1+cu117
+	Torchvision: 0.14.1+cu117
+	CUDA: 11.7
+	CUDA: 11.7
+	CUDNN: 8500
+	NumPy: 1.21.6
+	PIL: 9.5.0
+	CUDNN: 8500
+	CUDNN: 8500
+	NumPy: 1.21.6
+	PIL: 9.5.0
+	NumPy: 1.21.6
+	PIL: 9.5.0
+Args:
+	algorithm: BAIR
+	checkpoint_freq: 300
+	configs: []
+	data_dir: /home/shared/data/DomainBed
+	dataset: PACS
+	debug: False
+	deterministic: True
+	evalmode: fast
+	holdout_fraction: 0.2
+	model_save: None
+	name: PACS0
+	no_swad: False
+	out_dir: train_output/PACS/240710_12-15-18_PACS0
+	out_root: train_output/PACS
+	prebuild_loader: False
+	pretrained: True
+	run_name: 240710_12-15-18_PACS0
+	seed: 0
+	show: False
+	start_swad: 0.0
+	steps: None
+	tb_freq: 10
+	test_envs: None
+	trial_seed: 0
+	unique_name: 240710_12-15-18_PACS0
+	work_dir: .
+HParams:
+	data_augmentation: True
+	val_augment: False
+	resnet18: False
+	resnet_dropout: 0.0
+	class_balanced: False
+	optimizer: adam
+	freeze_bn: True
+	pretrained: True
+	lr: 5e-05
+	batch_size: 32
+	weight_decay: 0.0
+	disc_weight: 0.01
+	warm_up: 300
+	maxinfo_weight: 0.1
+	ot_weight: 0.1
+	prototype_per_class: 16
+	mlp_width: 256
+	mlp_depth: 3
+	mlp_dropout: 0.5
+	swad: LossValley
+	swad_kwargs: 
+	  n_converge: 3
+	  n_tolerance: 6
+	  tolerance_ratio: 0.3
+	test_batchsize: 128
+	indomain_test: False
+Args:
+	algorithm: BAIR
+	checkpoint_freq: 300
+	configs: []
+	data_dir: /home/shared/data/DomainBed
+	dataset: PACS
+	debug: False
+	deterministic: True
+	evalmode: fast
+	holdout_fraction: 0.2
+	model_save: None
+	name: PACS0
+	no_swad: False
+	out_dir: train_output/PACS/240710_12-15-18_PACS0
+	out_root: train_output/PACS
+	prebuild_loader: False
+	pretrained: True
+	run_name: 240710_12-15-18_PACS0
+	seed: 1
+	show: False
+	start_swad: 0.0
+	steps: None
+	tb_freq: 10
+	test_envs: None
+	trial_seed: 0
+	unique_name: 240710_12-15-18_PACS0
+	work_dir: .
+HParams:
+	data_augmentation: True
+	val_augment: False
+	resnet18: False
+	resnet_dropout: 0.0
+	class_balanced: False
+	optimizer: adam
+	freeze_bn: True
+	pretrained: True
+	lr: 5e-05
+	batch_size: 32
+	weight_decay: 0.0
+	disc_weight: 0.01
+	warm_up: 300
+	maxinfo_weight: 0.1
+	ot_weight: 0.1
+	prototype_per_class: 16
+	mlp_width: 256
+	mlp_depth: 3
+	mlp_dropout: 0.5
+	swad: LossValley
+	swad_kwargs: 
+	  n_converge: 3
+	  n_tolerance: 6
+	  tolerance_ratio: 0.3
+	test_batchsize: 128
+	indomain_test: False
+Args:
+	algorithm: BAIR
+	checkpoint_freq: 300
+	configs: []
+	data_dir: /home/shared/data/DomainBed
+	dataset: PACS
+	debug: False
+	deterministic: True
+	evalmode: fast
+	holdout_fraction: 0.2
+	model_save: None
+	name: PACS0
+	no_swad: False
+	out_dir: train_output/PACS/240710_12-15-18_PACS0
+	out_root: train_output/PACS
+	prebuild_loader: False
+	pretrained: True
+	run_name: 240710_12-15-18_PACS0
+	seed: 2
+	show: False
+	start_swad: 0.0
+	steps: None
+	tb_freq: 10
+	test_envs: None
+	trial_seed: 0
+	unique_name: 240710_12-15-18_PACS0
+	work_dir: .
+HParams:
+	data_augmentation: True
+	val_augment: False
+	resnet18: False
+	resnet_dropout: 0.0
+	class_balanced: False
+	optimizer: adam
+	freeze_bn: True
+	pretrained: True
+	lr: 5e-05
+	batch_size: 32
+	weight_decay: 0.0
+	disc_weight: 0.01
+	warm_up: 300
+	maxinfo_weight: 0.1
+	ot_weight: 0.1
+	prototype_per_class: 16
+	mlp_width: 256
+	mlp_depth: 3
+	mlp_dropout: 0.5
+	swad: LossValley
+	swad_kwargs: 
+	  n_converge: 3
+	  n_tolerance: 6
+	  tolerance_ratio: 0.3
+	test_batchsize: 128
+	indomain_test: False
+Dataset:
+Dataset:
+	[PACS] #envs=4, #classes=7
+	[PACS] #envs=4, #classes=7
+	env0: art_painting (#2048)
+	env0: art_painting (#2048)
+	env1: cartoon (#2344)
+	env1: cartoon (#2344)
+	env2: photo (#1670)
+	env2: photo (#1670)
+	env3: sketch (#3929)
+	env3: sketch (#3929)
+
+
+Dataset:
+[37m[36mINFO[0m[0m 07/10 12:15:20 | n_steps = 5001
+[37m[36mINFO[0m[0m 07/10 12:15:20 | n_steps = 5001
+	[PACS] #envs=4, #classes=7
+[37m[36mINFO[0m[0m 07/10 12:15:20 | checkpoint_freq = 300
+[37m[36mINFO[0m[0m 07/10 12:15:20 | checkpoint_freq = 300
+	env0: art_painting (#2048)
+[37m[36mINFO[0m[0m 07/10 12:15:20 | n_steps is updated to 5001 => 4801 for checkpointing
+[37m[36mINFO[0m[0m 07/10 12:15:20 | n_steps is updated to 5001 => 4801 for checkpointing
+	env1: cartoon (#2344)
+[37m[36mINFO[0m[0m 07/10 12:15:20 | Target test envs = [[0], [1], [2], [3]]
+	env2: photo (#1670)
+[37m[36mINFO[0m[0m 07/10 12:15:20 | Target test envs = [[0], [1], [2], [3]]
+	env3: sketch (#3929)
+
+[37m[36mINFO[0m[0m 07/10 12:15:20 | n_steps = 5001
+[37m[36mINFO[0m[0m 07/10 12:15:20 | checkpoint_freq = 300
+[37m[36mINFO[0m[0m 07/10 12:15:20 | n_steps is updated to 5001 => 4801 for checkpointing
+[37m[36mINFO[0m[0m 07/10 12:15:20 | Target test envs = [[0], [1], [2], [3]]
+[37m[36mINFO[0m[0m 07/10 17:05:59 | === Summary ===
+[37m[36mINFO[0m[0m 07/10 17:05:59 | Command: train_all.py PACS0 --dataset PACS --deterministic --seed 1 --checkpoint_freq 300 --data_dir /home/shared/data/DomainBed --algorithm BAIR --pretrained
+[37m[36mINFO[0m[0m 07/10 17:05:59 | Unique name: 240710_12-15-18_PACS0
+[37m[36mINFO[0m[0m 07/10 17:05:59 | Out path: train_output/PACS/240710_12-15-18_PACS0
+[37m[36mINFO[0m[0m 07/10 17:05:59 | Algorithm: BAIR
+[37m[36mINFO[0m[0m 07/10 17:05:59 | Dataset: PACS
++------------------+--------------+---------+---------+---------+---------+
+|    Selection     | art_painting | cartoon |  photo  |  sketch |   Avg.  |
++------------------+--------------+---------+---------+---------+---------+
+|    prototype     |   89.551%    | 84.471% | 97.725% | 82.133% | 88.470% |
+| classifer weight |   89.307%    | 84.172% | 97.844% | 82.336% | 88.415% |
++------------------+--------------+---------+---------+---------+---------+
+[37m[36mINFO[0m[0m 07/10 17:06:13 | === Summary ===
+[37m[36mINFO[0m[0m 07/10 17:06:13 | Command: train_all.py PACS0 --dataset PACS --deterministic --seed 2 --checkpoint_freq 300 --data_dir /home/shared/data/DomainBed --algorithm BAIR --pretrained
+[37m[36mINFO[0m[0m 07/10 17:06:13 | Unique name: 240710_12-15-18_PACS0
+[37m[36mINFO[0m[0m 07/10 17:06:13 | Out path: train_output/PACS/240710_12-15-18_PACS0
+[37m[36mINFO[0m[0m 07/10 17:06:13 | Algorithm: BAIR
+[37m[36mINFO[0m[0m 07/10 17:06:13 | Dataset: PACS
++------------------+--------------+---------+---------+---------+---------+
+|    Selection     | art_painting | cartoon |  photo  |  sketch |   Avg.  |
++------------------+--------------+---------+---------+---------+---------+
+|    prototype     |   90.820%    | 83.703% | 97.305% | 83.075% | 88.726% |
+| classifer weight |   90.039%    | 83.276% | 97.545% | 83.304% | 88.541% |
++------------------+--------------+---------+---------+---------+---------+
+[37m[36mINFO[0m[0m 07/10 17:06:15 | === Summary ===
+[37m[36mINFO[0m[0m 07/10 17:06:15 | Command: train_all.py PACS0 --dataset PACS --deterministic --seed 0 --checkpoint_freq 300 --data_dir /home/shared/data/DomainBed --algorithm BAIR --pretrained
+[37m[36mINFO[0m[0m 07/10 17:06:15 | Unique name: 240710_12-15-18_PACS0
+[37m[36mINFO[0m[0m 07/10 17:06:15 | Out path: train_output/PACS/240710_12-15-18_PACS0
+[37m[36mINFO[0m[0m 07/10 17:06:15 | Algorithm: BAIR
+[37m[36mINFO[0m[0m 07/10 17:06:15 | Dataset: PACS
++------------------+--------------+---------+---------+---------+---------+
+|    Selection     | art_painting | cartoon |  photo  |  sketch |   Avg.  |
++------------------+--------------+---------+---------+---------+---------+
+|    prototype     |   91.650%    | 83.959% | 97.545% | 83.405% | 89.140% |
+| classifer weight |   91.211%    | 83.874% | 97.545% | 83.813% | 89.111% |
++------------------+--------------+---------+---------+---------+---------+

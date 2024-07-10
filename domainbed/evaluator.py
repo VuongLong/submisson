@@ -27,7 +27,7 @@ def accuracy_from_loader(algorithm, loader, weights, debug=False, model_type='no
             average_prototype[i]=algorithm.network[2].prototype[prototype_predicted_classes==i].mean(0)
     else:
         average_prototype = None
-
+    
     for i, batch in enumerate(loader):
         x = batch["x"].to(device)
         y = batch["y"].to(device)
@@ -37,7 +37,7 @@ def accuracy_from_loader(algorithm, loader, weights, debug=False, model_type='no
             loss = F.cross_entropy(logits, y).item()
 
         B = len(x)
-        losssum += loss# * B
+        losssum += loss * B
 
         if weights is None:
             batch_weights = torch.ones(len(x))
@@ -53,11 +53,12 @@ def accuracy_from_loader(algorithm, loader, weights, debug=False, model_type='no
 
         if debug:
             break
+    # import pdb; pdb.set_trace()
 
     algorithm.train()
-    acc = correct / total
+    acc = correct# / total
     loss = losssum# / total
-    return acc, loss
+    return acc, loss, total
 
 
 def accuracy(algorithm, loader_kwargs, weights, **kwargs):
@@ -102,6 +103,12 @@ class Evaluator:
         summaries["test_out"] = 0.0
         summaries["train_in"] = 0.0
         summaries["train_out"] = 0.0
+
+        data_summaries = collections.defaultdict(float)
+        data_summaries["num_data_test_in"] = 0.0
+        data_summaries["num_data_train_in"] = 0.0
+        data_summaries["num_data_test_out"] = 0.0
+        data_summaries["num_data_train_out"] = 0.0
         accuracies = {}
         losses = {}
 
@@ -117,17 +124,35 @@ class Evaluator:
                 continue
 
             is_test = env_num in self.test_envs
-            acc, loss = accuracy(algorithm, loader_kwargs, weights, debug=self.debug, model_type=model_type)
+            acc, loss, total = accuracy(algorithm, loader_kwargs, weights, debug=self.debug, model_type=model_type)
             accuracies[name] = acc
             losses[name] = loss
 
+            # if env_num in self.train_envs:
+            #     summaries["train_" + inout] += acc / n_train_envs
+            #     if inout == "out":
+            #         summaries["tr_" + inout + "loss"] += loss / n_train_envs
+            # elif is_test:
+            #     summaries["test_" + inout] += acc / n_test_envs
+
             if env_num in self.train_envs:
                 summaries["train_" + inout] += acc / n_train_envs
+                data_summaries["num_data_train_" + inout] += total
                 if inout == "out":
                     summaries["tr_" + inout + "loss"] += loss / n_train_envs
+                    data_summaries["num_data_train_" + inout] += total
+
             elif is_test:
                 summaries["test_" + inout] += acc / n_test_envs
-            
+                data_summaries["num_data_test_" + inout] += total
+        
+        summaries["train_out"] /= data_summaries["num_data_train_out"]
+        summaries["tr_outloss"] /= data_summaries["num_data_train_out"]
+
+
+        summaries["test_in"] = (summaries["test_in"]+summaries["test_out"]) / (data_summaries["num_data_test_in"]+data_summaries["num_data_test_out"])
+        summaries["test_out"] /= data_summaries["num_data_test_out"]
+         
         if ret_losses:
             return accuracies, summaries, losses
         else:

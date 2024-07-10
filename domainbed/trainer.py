@@ -1,324 +1,325 @@
-import collections
-import json
-import time
 import copy
-from pathlib import Path
+import os
+import pickle
+import shutil
 
 import numpy as np
+import pandas as pd
 import torch
-import torch.utils.data
-
-from domainbed.datasets import get_dataset, split_dataset
-from domainbed import algorithms
-from domainbed.evaluator import Evaluator
-from domainbed.lib import misc
+import torch.nn as nn
+from domainbed.dataloaders import dataloader_factory
 from domainbed.lib import swa_utils
-from domainbed.lib.query import Q
-from domainbed.lib.fast_data_loader import InfiniteDataLoader, FastDataLoader
-from domainbed import swad as swad_module
+from domainbed import swad
+from domainbed.algorithms import BAIR
 
-if torch.cuda.is_available():
-    device = "cuda"
-else:
-    device = "cpu"
-
-
-def json_handler(v):
-    if isinstance(v, (Path, range)):
-        return str(v)
-    raise TypeError(f"`{type(v)}` is not JSON Serializable")
+from torch import einsum
+from einops import rearrange
+from torch.utils.data import DataLoader
+import torch.nn.functional as F
+import ot
+import math
+import pdb
 
 
-def train(test_envs, args, hparams, n_steps, checkpoint_freq, logger, writer, target_env=None):
-    logger.info("")
+		
+def set_tr_val_samples_labels(meta_filenames, val_size):
+	sample_tr_paths, class_tr_labels, sample_val_paths, class_val_labels = [], [], [], []
 
-    #######################################################
-    # setup dataset & loader
-    #######################################################
-    args.real_test_envs = test_envs  # for log
-    algorithm_class = algorithms.get_algorithm_class(args.algorithm)
-    dataset, in_splits, out_splits = get_dataset(test_envs, args, hparams, algorithm_class)
-    test_splits = []
-    if hparams.indomain_test > 0.0:
-        logger.info("!!! In-domain test mode On !!!")
-        assert hparams["val_augment"] is False, (
-            "indomain_test split the val set into val/test sets. "
-            "Therefore, the val set should be not augmented."
-        )
-        val_splits = []
-        for env_i, (out_split, _weights) in enumerate(out_splits):
-            n = len(out_split) // 2
-            seed = misc.seed_hash(args.trial_seed, env_i)
-            val_split, test_split = split_dataset(out_split, n, seed=seed)
-            import pdb; pdb.set_trace()
+	for idx_domain, meta_filename in enumerate(meta_filenames):
+		column_names = ["filename", "class_label"]
+		data_frame = pd.read_csv(meta_filename, header=None, names=column_names, sep="\s+")
+		data_frame = data_frame.sample(frac=1).reset_index(drop=True)
 
-            val_splits.append((val_split, None))
-            test_splits.append((test_split, None))
-            logger.info(
-                "env %d: out (#%d) -> val (#%d) / test (#%d)"
-                % (env_i, len(out_split), len(val_split), len(test_split))
-            )
-        out_splits = val_splits
+		split_idx = int(len(data_frame) * (1 - val_size))
+		sample_tr_paths.append(data_frame["filename"][:split_idx])
+		class_tr_labels.append(data_frame["class_label"][:split_idx])
 
-    if target_env is not None:
-        testenv_name = f"te_{dataset.environments[target_env]}"
-        logger.info(f"Target env = {target_env}")
-    else:
-        testenv_properties = [str(dataset.environments[i]) for i in test_envs]
-        testenv_name = "te_" + "_".join(testenv_properties)
-
-    logger.info(
-        "Testenv name escaping {} -> {}".format(testenv_name, testenv_name.replace(".", ""))
-    )
-    testenv_name = testenv_name.replace(".", "")
-    logger.info(f"Test envs = {test_envs}, name = {testenv_name}")
-
-    n_envs = len(dataset)
-    train_envs = sorted(set(range(n_envs)) - set(test_envs))
-    iterator = misc.SplitIterator(test_envs)
-    batch_sizes = np.full([n_envs], hparams["batch_size"], dtype=np.int)
-
-    batch_sizes[test_envs] = 0
-    batch_sizes = batch_sizes.tolist()
-
-    logger.info(f"Batch sizes for each domain: {batch_sizes} (total={sum(batch_sizes)})")
-
-    # calculate steps per epoch
-    steps_per_epochs = [
-        len(env) / batch_size
-        for (env, _), batch_size in iterator.train(zip(in_splits, batch_sizes))
-    ]
-    steps_per_epoch = min(steps_per_epochs)
-    # epoch is computed by steps_per_epoch
-    prt_steps = ", ".join([f"{step:.2f}" for step in steps_per_epochs])
-    logger.info(f"steps-per-epoch for each domain: {prt_steps} -> min = {steps_per_epoch:.2f}")
-
-    # setup loaders
-    train_loaders = [
-        InfiniteDataLoader(
-            dataset=env,
-            weights=env_weights,
-            batch_size=batch_size,
-            num_workers=dataset.N_WORKERS,
-        )
-        for (env, env_weights), batch_size in iterator.train(zip(in_splits, batch_sizes))
-    ]
-
-    # setup eval loaders
-    eval_loaders_kwargs = []
-    for i, (env, _) in enumerate(in_splits + out_splits + test_splits):
-        batchsize = hparams["test_batchsize"]
-        loader_kwargs = {"dataset": env, "batch_size": batchsize, "num_workers": dataset.N_WORKERS}
-        if args.prebuild_loader:
-            loader_kwargs = FastDataLoader(**loader_kwargs)
-        eval_loaders_kwargs.append(loader_kwargs)
-
-    eval_weights = [None for _, weights in (in_splits + out_splits + test_splits)]
-    eval_loader_names = ["env{}_in".format(i) for i in range(len(in_splits))]
-    eval_loader_names += ["env{}_out".format(i) for i in range(len(out_splits))]
-    eval_loader_names += ["env{}_inTE".format(i) for i in range(len(test_splits))]
-    eval_meta = list(zip(eval_loader_names, eval_loaders_kwargs, eval_weights))
-
-    #######################################################
-    # setup algorithm (model)
-    #######################################################
-    algorithm = algorithm_class(
-        dataset.input_shape,
-        dataset.num_classes,
-        len(dataset) - len(test_envs),
-        hparams,
-    )
-
-    algorithm.to(device)
-
-    n_params = sum([p.numel() for p in algorithm.parameters()])
-    logger.info("# of params = %d" % n_params)
-
-    train_minibatches_iterator = zip(*train_loaders)
-    checkpoint_vals = collections.defaultdict(lambda: [])
-
-    #######################################################
-    # start training loop
-    #######################################################
-    evaluator = Evaluator(
-        test_envs,
-        eval_meta,
-        n_envs,
-        logger,
-        evalmode=args.evalmode,
-        debug=args.debug,
-        target_env=target_env,
-    )
-
-    swad = None
-    if hparams["swad"]:
-        swad_algorithm = swa_utils.AveragedModel(algorithm)
-        swad_cls = getattr(swad_module, hparams["swad"])
-        swad = swad_cls(evaluator, **hparams.swad_kwargs)
-
-    last_results_keys = None
-    records = []
-    epochs_path = args.out_dir / "results.jsonl"
-
-    for step in range(n_steps):
-        step_start_time = time.time()
-        # batches_dictlist: [{env0_data_key: tensor, env0_...}, env1_..., ...]
-        batches_dictlist = next(train_minibatches_iterator)
-        # batches: {data_key: [env0_tensor, ...], ...}
-        batches = misc.merge_dictlist(batches_dictlist)
-        # to device
-        batches = {
-            key: [tensor.to(device) for tensor in tensorlist] for key, tensorlist in batches.items()
-        }
-
-        inputs = {**batches, "step": step}
-        step_vals = algorithm.update(**inputs)
-        for key, val in step_vals.items():
-            checkpoint_vals[key].append(val)
-        checkpoint_vals["step_time"].append(time.time() - step_start_time)
-
-        if swad:
-            # swad_algorithm is segment_swa for swad
-            # if step > 1000:
-            swad_algorithm.update_parameters(algorithm, step=step)
-
-        if step % checkpoint_freq == 0:
-            results = {
-                "step": step,
-                "epoch": step / steps_per_epoch,
-            }
-            
-
-            for key, val in checkpoint_vals.items():
-                results[key] = np.mean(val)
-
-            eval_start_time = time.time()
-            accuracies, summaries = evaluator.evaluate(algorithm)
-            results["eval_time"] = time.time() - eval_start_time
-
-            # results = (epochs, loss, step, step_time)
-            results_keys = list(summaries.keys()) + sorted(accuracies.keys()) + list(results.keys())
-            # merge results
-            results.update(summaries)
-            results.update(accuracies)
-
-            # print
-            if results_keys != last_results_keys:
-                logger.info(misc.to_row(results_keys))
-                last_results_keys = results_keys
-            logger.info(misc.to_row([results[key] for key in results_keys]))
-            records.append(copy.deepcopy(results))
-
-            # update results to record
-            results.update({"hparams": dict(hparams), "args": vars(args)})
-
-            with open(epochs_path, "a") as f:
-                f.write(json.dumps(results, sort_keys=True, default=json_handler) + "\n")
-
-            checkpoint_vals = collections.defaultdict(lambda: [])
-            if writer is not None:
-                writer.add_scalars_with_prefix(summaries, step, f"{testenv_name}/summary/")
-                writer.add_scalars_with_prefix(accuracies, step, f"{testenv_name}/all/")
-
-            if args.model_save and step >= args.model_save:
-                ckpt_dir = args.out_dir / "checkpoints"
-                ckpt_dir.mkdir(exist_ok=True)
-
-                test_env_str = ",".join(map(str, test_envs))
-                filename = "TE{}_{}.pth".format(test_env_str, step)
-                if len(test_envs) > 1 and target_env is not None:
-                    train_env_str = ",".join(map(str, train_envs))
-                    filename = f"TE{target_env}_TR{train_env_str}_{step}.pth"
-                path = ckpt_dir / filename
-
-                save_dict = {
-                    "args": vars(args),
-                    "model_hparams": dict(hparams),
-                    "test_envs": test_envs,
-                    "model_dict": algorithm.cpu().state_dict(),
-                }
-                algorithm.cuda()
-                if not args.debug:
-                    torch.save(save_dict, path)
-                else:
-                    logger.debug("DEBUG Mode -> no save (org path: %s)" % path)
-
-            # swad
-            if swad:
-                # def prt_results_fn(results, avgmodel):
-                #     step_str = f" [{avgmodel.start_step}-{avgmodel.end_step}]"
-                #     row = misc.to_row([results[key] for key in results_keys if key in results])
-                #     logger.info(row + step_str)
+		sample_val_paths.extend(data_frame["filename"][split_idx:])
+		class_val_labels.extend(data_frame["class_label"][split_idx:])
+	return sample_tr_paths, class_tr_labels, sample_val_paths, class_val_labels
 
 
-                swad.update_and_evaluate(
-                    swad_algorithm, results["train_out"], results["tr_outloss"], None
-                )
-
-                if hasattr(swad, "dead_valley") and swad.dead_valley:
-                    logger.info("SWAD valley is dead -> early stop !")
-                    break
-
-                swad_algorithm = swa_utils.AveragedModel(algorithm)  # reset
-
-        if step % args.tb_freq == 0:
-            # add step values only for tb log
-            if writer is not None:
-                writer.add_scalars_with_prefix(step_vals, step, f"{testenv_name}/summary/")
-
-    # find best
-    logger.info("---")
-    records = Q(records)
-    oracle_best = records.argmax("test_out")["test_in"]
-    iid_best = records.argmax("train_out")["test_in"]
-    last = records[-1]["test_in"]
-
-    if hparams.indomain_test:
-        # if test set exist, use test set for indomain results
-        in_key = "train_inTE"
-    else:
-        in_key = "train_out"
-
-    iid_best_indomain = records.argmax("train_out")[in_key]
-    last_indomain = records[-1][in_key]
-
-    ret = {
-        "oracle": oracle_best,
-        "iid": iid_best,
-        "last": last,
-        "last (inD)": last_indomain,
-        "iid (inD)": iid_best_indomain,
-    }
-
-    # Evaluate SWAD
-    if swad:
-        swad_algorithm = swad.get_final_model()
-        if hparams["freeze_bn"] is False:
-            n_steps = 500 if not args.debug else 10
-            logger.warning(f"Update SWAD BN statistics for {n_steps} steps ...")
-            swa_utils.update_bn(train_minibatches_iterator, swad_algorithm, n_steps)
+def set_test_samples_labels(meta_filenames):
+	sample_paths, class_labels = [], []
+	for idx_domain, meta_filename in enumerate(meta_filenames):
+		column_names = ["filename", "class_label"]
+		data_frame = pd.read_csv(meta_filename, header=None, names=column_names, sep="\s+")
+		sample_paths.extend(data_frame["filename"])
+		class_labels.extend(data_frame["class_label"])
+	return sample_paths, class_labels
 
 
-        swad_algorithm.module.network[2]=algorithm.network[2]
-        swad_algorithm = swad_algorithm.module
-        logger.warning("Evaluate SWAD ...")
-        accuracies, summaries = evaluator.evaluate(swad_algorithm, model_type='normal')
-        results = {**summaries, **accuracies}
-        # start = swad_algorithm.start_step
-        # end = swad_algorithm.end_step
-        # step_str = f" [{start}-{end}]  (N={swad_algorithm.n_averaged})"
-        # row = misc.to_row([results[key] for key in results_keys if key in results]) + step_str
-        # logger.info(row)
 
-        ret["SWAD"] = results["test_in"]
-        ret["SWAD (inD)"] = results[in_key]
+class Trainer:
+	def __init__(self, hparams, dataset_configs, device, bash_args):
+		self.dataset_configs = dataset_configs
+		self.device = device
+		self.bash_args = bash_args
+		# Read data list files and split Train-Val with 80% train, 20% test
+		(
+			src_tr_sample_paths,
+			src_tr_class_labels,
+			src_val_sample_paths,
+			src_val_class_labels,
+		) = set_tr_val_samples_labels(self.dataset_configs.src_train_meta_filenames, self.dataset_configs.val_size)
+		test_sample_paths, test_class_labels = set_test_samples_labels(self.dataset_configs.target_test_meta_filenames)
+		
+		self.train_loaders = []
+		
+		# Create train dataloader
+		for i in range(self.dataset_configs.n_domain_classes):
+			self.train_loaders.append(
+				DataLoader(
+					dataloader_factory.get_train_dataloader(self.dataset_configs.dataset)(
+						src_path=self.dataset_configs.src_data_path,
+						sample_paths=src_tr_sample_paths[i],
+						class_labels=src_tr_class_labels[i],
+						domain_label=i,
+					),
+					batch_size=self.dataset_configs.batch_size,
+					shuffle=True,
+					drop_last=True, num_workers=2
+				)
+			)
 
-        accuracies, summaries = evaluator.evaluate(swad_algorithm, model_type='swad')
-        results = {**summaries, **accuracies}
-        ret["SWAD_prototype"] = results["test_in"]
+		# Create val dataloader
+
+		self.val_loader = DataLoader(
+			dataloader_factory.get_test_dataloader(self.dataset_configs.dataset)(
+				src_path=self.dataset_configs.src_data_path,
+				sample_paths=src_val_sample_paths,
+				class_labels=src_val_class_labels,
+			),
+			batch_size=self.dataset_configs.batch_size,
+			shuffle=False, num_workers=2
+		)
+
+		# Create test dataloader
+		self.test_loader = DataLoader(
+			dataloader_factory.get_test_dataloader(self.dataset_configs.dataset)(
+				src_path=self.dataset_configs.src_data_path, sample_paths=test_sample_paths, class_labels=test_class_labels
+			),
+			batch_size=self.dataset_configs.batch_size,
+			shuffle=False, num_workers=2
+		)
+		# Log number of images 
+		for i in range(self.dataset_configs.n_domain_classes):
+			print('Train: ', i, ' ', len(self.train_loaders[i].dataset))
+
+		print('Val_size: ', self.dataset_configs.val_size)
+		print('Val: ', len(self.val_loader.dataset))
+		print('Test: ', len(self.test_loader.dataset))
+
+		self.algorithm = BAIR(
+			(3, 224, 224),
+			self.dataset_configs.n_classes,
+			self.dataset_configs.n_domain_classes,
+			hparams).to(self.device)
+		
+		self.num_embed = self.dataset_configs.n_classes * hparams['prototype_per_class']
+
+		
+		# Define SWAD average model
+		self.swad_algorithm = swa_utils.AveragedModel(self.algorithm.network)
+		self.swad_valley = swad.LossValley(evaluator=None, n_converge=3, n_tolerance=6, tolerance_ratio=0.3)
+		self.hist = None
+
+		self.criterion = nn.CrossEntropyLoss()
+
+		self.ret = {}
+		
+		self.val_loss_min = np.Inf
+		self.test_acc_max = 0
+		self.val_acc_max = 0
+		self.corresponding_test = 0
 
 
-    for k, acc in ret.items():
-        logger.info(f"{k} = {acc:.3%}")
+	def train(self):
+		self.algorithm.train()
 
-    return ret, records
+		self.train_iter_loaders = []
+		for train_loader in self.train_loaders:
+			self.train_iter_loaders.append(iter(train_loader))
+
+		for iteration in range(self.dataset_configs.iterations):
+			samples, labels, domain_labels = [], [], []
+
+			for idx in range(len(self.train_iter_loaders)):
+				# Reset Loader
+				if (iteration % (len(self.train_iter_loaders[idx]))-1) == 0:
+					self.train_iter_loaders[idx] = iter(self.train_loaders[idx])
+				
+				# Load Mini-Batch
+				itr_samples, itr_labels, itr_domain_labels = next(self.train_iter_loaders[idx])
+				samples.append(itr_samples.to(self.device))
+				labels.append(itr_labels.to(self.device))
+
+			# import pdb; pdb.set_trace()
+
+			batches = {'x': samples, 'y': labels}
+			inputs = {**batches, "step": iteration}
+			step_vals = self.algorithm.update(**inputs)
+			
+			if iteration > self.dataset_configs.iterations * self.bash_args.start_swad:
+				# Update swad average model
+				self.swad_algorithm.update_parameters(self.algorithm.network, step=iteration)
+
+				if iteration % self.dataset_configs.step_eval == 0 or iteration == self.dataset_configs.iterations - 1:
+					val_acc, val_loss = self.evaluate(iteration)
+
+					if iteration > self.dataset_configs.iterations * self.bash_args.start_swad:
+						self.swad_valley.update_and_evaluate(self.swad_algorithm, val_acc, val_loss)
+						if self.swad_valley.dead_valley:
+							break
+						self.swad_algorithm = swa_utils.AveragedModel(self.algorithm.network)
+		
+
+		self.algorithm.eval()
+		final_swad = self.swad_valley.get_final_model().module
+		if not isinstance(final_swad, nn.Sequential):
+			final_swad = final_swad.module
+		test_acc, _ = self.evaluate_loader(final_swad, test_type='Test', model_type='swad')
+		self.ret["classifer weight"] = test_acc
+
+		self.histogram()
+		return self.ret
+
+	def histogram(self, data=None, labels=None):
+	   
+		self.hist = torch.zeros(len(self.train_loaders), self.num_embed).to(self.device)
+		fault_map = 0
+		prototype_feature = self.algorithm.prototype_net.prototype
+		for idx in range(len(self.train_loaders)):
+			for iteration, (samples, labels, domains) in enumerate(self.train_loaders[idx]):
+				samples = samples.to(self.device)
+				labels = labels.to(self.device)
+				domains = domains.to(self.device)
+				features = self.algorithm.network[0](samples) 
+				cost_matrix = self.algorithm.cosine_similarity(features, prototype_feature)
+				sub_space_idx = cost_matrix.min(1)[1]
+				fault_map = (1-(self.algorithm.prototype_net.labels[sub_space_idx] == labels).int()).sum()
+				for v in sub_space_idx:
+					self.hist[idx, v]+=1
+		
+		print(self.hist.int())
+		print(self.hist.sum(0).int())
+		print('fault_map:' , fault_map)
+
+	def evaluate_loader(self, model, test_type='Val', model_type='norm'):
+		n_class_corrected = 0
+		total_classification_loss = 0
+		swad_norm_ave_prototype_n_class_corrected = 0
+		if test_type == 'Val':
+			loader = self.val_loader
+		else:
+			loader = self.test_loader
+		
+	   
+		with torch.no_grad():
+					
+			# Using prototype
+			prototype_logits = self.algorithm.network[1](model[2].prototype)
+			_, prototype_predicted_classes = torch.max(prototype_logits, 1)
+			average_prototype = torch.zeros(self.dataset_configs.n_classes, self.dataset_configs.feature_dim).to(self.device)
+			norm_average_prototype = torch.zeros(self.dataset_configs.n_classes, self.dataset_configs.feature_dim).to(self.device)
+			for i in range(self.dataset_configs.n_classes):
+				average_prototype[i]=model[2].prototype[prototype_predicted_classes==i].mean(0)
+				norm_average_prototype[i]=F.normalize(model[2].prototype[prototype_predicted_classes==i],  dim=1).mean(0)
+
+			prototype_logits = self.algorithm.network[1](self.algorithm.prototype_net.prototype)
+			_, prototype_predicted_classes = torch.max(prototype_logits, 1)
+			average_last_prototype = torch.zeros(self.dataset_configs.n_classes, self.dataset_configs.feature_dim).to(self.device)
+			norm_average_last_prototype = torch.zeros(self.dataset_configs.n_classes, self.dataset_configs.feature_dim).to(self.device)
+			
+			for i in range(self.dataset_configs.n_classes):
+				average_last_prototype[i]=self.algorithm.prototype_net.prototype[prototype_predicted_classes==i].mean(0)
+				norm_average_last_prototype[i]=F.normalize(self.algorithm.prototype_net.prototype[prototype_predicted_classes==i],  dim=1).mean(0)
+				
+
+			for iteration, (samples, labels, domain_labels) in enumerate(loader):
+				samples, labels = samples.to(self.device), labels.to(self.device)
+				
+				features = model[0](samples)
+				
+				# Using classifier for prediction
+				predicted_classes = model[1](features)
+				classification_loss = self.criterion(predicted_classes, labels)
+				total_classification_loss += classification_loss.item()
+				_, predicted_classes = torch.max(predicted_classes, 1)
+				n_class_corrected += (predicted_classes == labels).sum().item()
+				
+				# Using swad-encoder with last prototype istead of swad-prototype
+				if model_type == 'swad':
+					predicted_classes = F.linear(F.normalize(features, dim=1), F.normalize(average_last_prototype,  dim=1))
+					_, predicted_classes = torch.max(predicted_classes, 1)
+					swad_norm_ave_prototype_n_class_corrected += (predicted_classes == labels).sum().item()
+					
+		
+		print("-----------------------------------")
+		print_out = "{} set: Accuracy: {}/{} {:.2f}%, {}".format(
+			test_type, 
+			n_class_corrected,len(loader.dataset),
+			100.0 * n_class_corrected / len(loader.dataset),
+			total_classification_loss / len(loader.dataset),)
+		print(print_out)
+		print("-----------------------------------")
+		
+		# import pdb; pdb.set_trace()
+
+		if model_type == 'swad':
+			print("-----------------------------------")
+			print_out_swad = "{} set: SWAD-encoder + Last-protype Accuracy: {}/{} {:.2f}%, {}".format(
+				test_type, 
+				n_class_corrected,len(loader.dataset),
+				100.0 * swad_norm_ave_prototype_n_class_corrected / len(loader.dataset), 
+				total_classification_loss / len(loader.dataset),)
+			print(print_out_swad)
+			print("-----------------------------------")
+			self.ret["prototype"] = swad_norm_ave_prototype_n_class_corrected / len(loader.dataset)
+			
+			# name = '{}_{}_ot_{}_smooth_{}_pcl-type_{}_{}'.format(self.dataset_configs.dataset, 
+			# 	str(self.bash_args.prototype_per_class), 
+			# 	str(self.bash_args.ot_weight), 
+			# 	str(self.bash_args.smooth), 
+			# 	str(self.bash_args.pcl_weight), 
+			# 	str(self.bash_args.pcl_norm))
+
+			# f = open("algorithms/BAIR/results/no-pretrained_{}.txt".format(name), "a")
+			# f.write("{}, seed {}".format(self.dataset_configs.exp_name, self.bash_args.exp_idx))
+
+			# f.write('\n')
+			# f.write(print_out)
+			# f.write('\n')
+			# f.write(print_out_swad)
+			# f.write('\n')
+			# f.close()
+
+		return n_class_corrected / len(loader.dataset), total_classification_loss / len(loader.dataset)
+		
+
+	def evaluate(self, n_iter):
+		self.algorithm.eval()
+		
+		val_acc, val_loss = self.evaluate_loader(self.algorithm.network, test_type='Val')
+		test_acc, _ = self.evaluate_loader(self.algorithm.network, test_type='Test')
+	 
+		if self.val_acc_max < val_acc:
+			self.val_acc_max = val_acc
+			self.corresponding_test = test_acc
+			# self.save_model(self.algorithm.network, 'corr')
+			
+		if self.test_acc_max < test_acc:
+			self.test_acc_max = test_acc
+			# self.save_model(self.algorithm.network, 'best')
+
+		print( "Best val: {:.2f}%, Corres: {:.2f}%, Best Test: {:.2f}%".format(
+			100.0 * self.val_acc_max, 100.0 * self.corresponding_test, 100.0 * self.test_acc_max))
+		
+		self.algorithm.train()
+		return val_acc, val_loss
+
+	def test(self):
+		self.algorithm.network.eval()
+		val_acc, _ = self.evaluate_loader(self.algorithm.network, test_type='Val')
+		test_acc, _ = self.evaluate_loader(self.algorithm.network, test_type='Test')
+		print("val: {}, Test: {}".format(val_acc, test_acc))
