@@ -313,9 +313,8 @@ class Trainer:
 	def save_model(self, network, name='best_model'):
 		if self.args.save_model_dir == '':
 			return
-		name = '{}_{}_{}_{}'.format(name, 
-				self.args.dataset, 
-				str(self.args.target), 
+		name = '{}_{}_{}'.format(name, 
+				self.dataset_configs.exp_name, 
 				str(self.args.seed))
 		
 		torch.save({

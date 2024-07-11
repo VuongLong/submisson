@@ -56,8 +56,9 @@ def main():
 		default=None,
 		help="Checkpoint every N steps. Default is dataset-dependent.",
 	)
-	parser.add_argument("--start_swad",type=float, default=0.0, help="Experiment configs")
-
+	parser.add_argument("--save_model_dir", type=str, default='NIPS_checkpoint', help="Experiment configs")
+	parser.add_argument("--ckpt", type=str, default='', help="Experiment configs")
+	parser.add_argument("--plot_dir", type=str, default='', help="Experiment configs")
 	
 	parser.add_argument("--test_envs", type=int, nargs="+", default=None)  # sketch in PACS
 	parser.add_argument("--holdout_fraction", type=float, default=0.2)
@@ -69,6 +70,8 @@ def main():
 	parser.add_argument("--run_name", type=str, default=None, help="Name of save folder")
 	parser.add_argument("--pretrained", action="store_true", help="")
 	parser.add_argument("--no_swad", action="store_true", help="Not using SWAD, default is using swad")
+	parser.add_argument("--start_swad",type=float, default=0.0, help="Experiment configs")
+	
 	parser.add_argument(
 		"--evalmode",
 		default="fast",
