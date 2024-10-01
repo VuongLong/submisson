@@ -1,4 +1,4 @@
-# BAIR: Best Attainable Invariant Representation for DG
+# Understanding Domain Generalization:\\A View of Necessity and Sufficiency
 
 
 ## Preparation
