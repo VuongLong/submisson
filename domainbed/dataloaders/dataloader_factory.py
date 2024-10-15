@@ -1,16 +1,14 @@
 from domainbed.dataloaders.MNIST_Dataloader import MNIST_Test_Dataloader, MNISTDataloader
 from domainbed.dataloaders.Standard_Dataloader import StandardDataloader, StandardValDataloader
-from domainbed.dataloaders.Fourier_Dataloader import FourierDGDataset
 
 
 train_dataloaders_map = {
     "PACS": StandardDataloader,
-    "F_PACS": FourierDGDataset,
     "DomainNet": StandardDataloader,
     "MNIST": MNISTDataloader,
     "OfficeHome": StandardDataloader,
     "VLCS": StandardDataloader,
-    'TerraInc': StandardDataloader
+    'TerraIncognita': StandardDataloader
 }
 
 test_dataloaders_map = {
@@ -19,7 +17,7 @@ test_dataloaders_map = {
     "MNIST": MNIST_Test_Dataloader,
     "OfficeHome": StandardValDataloader,
     "VLCS": StandardValDataloader,
-    'TerraInc': StandardValDataloader
+    'TerraIncognita': StandardValDataloader
 }
 
 

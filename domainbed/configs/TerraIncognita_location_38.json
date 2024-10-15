@@ -1,10 +1,6 @@
 {
-    "exp_name": "TerraInc_location_38",
-    "algorithm": "BAIR",
-    "model": "resnet50",
-    "feature_dim": 2048,
-    "dataset": "TerraInc",
-    "seed_value": 1,
+    "exp_name": "TerraIncognita_location_38",
+    "dataset": "TerraIncognita",
     "val_size": 0.2,
     "src_data_path": "domainbed/configs/data_list/",
     "src_train_meta_filenames":["domainbed/configs/data_list/TerraInc/location_46.txt",
@@ -13,9 +9,5 @@
     "target_test_meta_filenames": ["domainbed/configs/data_list/TerraInc/location_38.txt"],
     "n_classes": 10,
     "n_domain_classes": 3,
-    "iterations": 5000,
-    "learning_rate": 0.00005,
-    "dropout_rate": 0.0,
-    "batch_size": 32,
-    "step_eval": 300
+    "iterations": 5000
 }

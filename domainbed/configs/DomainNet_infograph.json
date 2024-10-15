@@ -1,10 +1,6 @@
 {
     "exp_name": "DomainNet_infograph",
-    "algorithm": "BAIR",
-    "model": "resnet50",
-    "feature_dim": 2048,
     "dataset": "DomainNet",
-    "seed_value": 1,
     "val_size": 0.2,
     "src_data_path": "/home/shared/data/DomainBed/DomainNet/",
     "src_train_meta_filenames":["domainbed/configs/data_list/DomainNet/clipart.txt",
@@ -15,9 +11,5 @@
     "target_test_meta_filenames": ["domainbed/configs/data_list/DomainNet/infograph.txt"],
     "n_classes": 345,
     "n_domain_classes": 5,
-    "iterations": 15000,
-    "learning_rate": 0.00005,
-    "dropout_rate": 0.0,
-    "batch_size": 32,
-    "step_eval": 300
+    "iterations": 15000
 }

@@ -10,7 +10,7 @@ else:
     device = "cpu"
 
 
-def accuracy_from_loader(algorithm, loader, weights, debug=False, model_type='normal'):
+def accuracy_from_loader(algorithm, loader, weights, debug=False):
 
     correct = 0
     total = 0
@@ -18,22 +18,13 @@ def accuracy_from_loader(algorithm, loader, weights, debug=False, model_type='no
     weights_offset = 0
 
     algorithm.eval()
-
-    if model_type == 'swad':
-        prototype_logits = algorithm.network[1](algorithm.network[2].prototype)
-        _, prototype_predicted_classes = torch.max(prototype_logits, 1)
-        average_prototype = torch.zeros(algorithm.n_classes, algorithm.feature_dim).to(algorithm.network[2].prototype.device)
-        for i in range(algorithm.network[2].n_classes):
-            average_prototype[i]=algorithm.network[2].prototype[prototype_predicted_classes==i].mean(0)
-    else:
-        average_prototype = None
     
     for i, batch in enumerate(loader):
         x = batch["x"].to(device)
         y = batch["y"].to(device)
 
         with torch.no_grad():
-            logits = algorithm.predict(x, average_prototype=average_prototype)
+            logits = algorithm.predict(x)
             loss = F.cross_entropy(logits, y).item()
 
         B = len(x)

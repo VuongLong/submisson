@@ -10,11 +10,42 @@ import shutil
 import errno
 from datetime import datetime
 from collections import Counter
+import copy
 
 import numpy as np
 import torch
 import torch.nn as nn
+import domainbed.lib.augmentations as augmentations
 
+
+def grl_hook(coeff):
+	def fun1(grad):
+		return -coeff*grad.clone()
+	return fun1
+
+def EntropyWeight(input_, coeff=1.0):
+	bs = input_.size(0)
+	epsilon = 1e-5
+	entropy = -input_ * torch.log(input_ + epsilon)
+	entropy = torch.sum(entropy, dim=1)
+	entropy.register_hook(grl_hook(coeff))
+	entropy = 1.0+torch.exp(-entropy)
+	weight = entropy / torch.sum(entropy).detach().item()
+	return weight 
+
+
+class GradReverse(torch.autograd.Function):
+	@staticmethod
+	def forward(ctx, x, alpha):
+		ctx.save_for_backward(-alpha)
+		return x.view_as(x)
+
+	@staticmethod
+	def backward(ctx, grad_output):
+		alpha = ctx.saved_tensors[0]
+		if ctx.needs_input_grad[0]:
+			grad_output = (grad_output * (alpha))
+		return (grad_output, None)
 
 def make_weights_for_balanced_classes(dataset):
     counts = Counter()
@@ -208,3 +239,40 @@ def merge_dictlist(dictlist):
         for data_key, v in dic.items():
             ret[data_key].append(v)
     return ret
+
+augmentations.IMAGE_SIZE = 224
+def aug(image, preprocess):
+    """Perform AugMix augmentations and compute mixture.
+    Args:
+        image: PIL.Image input image
+        preprocess: Preprocessing function which should return a torch tensor.
+    Returns:
+        mixed: Augmented and mixed image.
+    """
+    aug_list = augmentations.augmentations
+    mixture_width = 3
+    mixture_depth = -1
+    aug_severity = 1
+    ws = np.float32(
+        np.random.dirichlet([1] * mixture_width))
+    m = np.float32(np.random.beta(1, 1))
+
+    mix = torch.zeros_like(preprocess(image))
+    for i in range(mixture_width):
+        image_aug = image.copy()
+        depth = mixture_depth if mixture_depth > 0 else np.random.randint(
+            1, 4)
+        for _ in range(depth):
+            op = np.random.choice(aug_list)
+            image_aug = op(image_aug, aug_severity)
+        # Preprocessing commutes since all coefficients are convex
+        mix += ws[i] * preprocess(image_aug)
+
+    mixed = (1 - m) * preprocess(image) + m * mix
+    return mixed
+
+def Augmix(x, preprocess, no_jsd):
+    if no_jsd:
+      return aug(x, preprocess)
+    else:
+      return preprocess(x), aug(x, preprocess), aug(x, preprocess)

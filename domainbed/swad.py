@@ -91,8 +91,10 @@ class LossValley(SWADBase):
         self.converge_Q.append(frozen)
         self.smooth_Q.append(frozen)
 
+        print(self.threshold)
         print([model.end_loss for model in self.converge_Q])
         print([model.end_step for model in self.converge_Q])
+        print([model.end_step for model in self.smooth_Q])
 
         if not self.is_converged:
             if len(self.converge_Q) < self.n_converge:
@@ -101,7 +103,10 @@ class LossValley(SWADBase):
             min_idx = np.argmin([model.end_loss for model in self.converge_Q])
             untilmin_segment_swa = self.converge_Q[min_idx]  # until-min segment swa.
             
+            print('min_idx: ', min_idx)
             if min_idx == 0:
+                # import pdb; pdb.set_trace()
+                
                 self.converge_step = self.converge_Q[0].end_step
                 self.final_model = swa_utils.AveragedModel(untilmin_segment_swa)
 
@@ -142,12 +147,10 @@ class LossValley(SWADBase):
 
         # converged -> loss valley
         min_vloss = self.get_smooth_loss(0)
-        #import pdb; pdb.set_trace()
         
         if min_vloss > self.threshold:
             self.dead_valley = True
             print(f"Valley is dead at step {self.final_model.end_step}")
-            #import pdb; pdb.set_trace()
             return
 
         model = self.smooth_Q[0]
@@ -157,9 +160,7 @@ class LossValley(SWADBase):
 
     def get_final_model(self):
         if not self.is_converged:
-            # self.evaluator.logger.error(
-            #     "Requested final model, but model is not yet converged; return last model instead"
-            # )
+            print("Requested final model, but model is not yet converged; return last model instead")
             return self.converge_Q[-1].cuda()
 
         if not self.dead_valley:

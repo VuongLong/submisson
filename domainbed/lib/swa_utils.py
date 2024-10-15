@@ -12,6 +12,9 @@ class AveragedModel(Module):
         self.start_step = -1
         self.end_step = -1
 
+        
+        # import pdb; pdb.set_trace()
+
         if isinstance(model, AveragedModel):
             # prevent nested averagedmodel
             model = model.module

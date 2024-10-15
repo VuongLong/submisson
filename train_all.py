@@ -50,16 +50,11 @@ def main():
 	parser.add_argument(
 		"--steps", type=int, default=None, help="Number of steps. Default is dataset-dependent."
 	)
-	parser.add_argument(
-		"--checkpoint_freq",
-		type=int,
-		default=None,
-		help="Checkpoint every N steps. Default is dataset-dependent.",
-	)
-	parser.add_argument("--save_model_dir", type=str, default='NIPS_checkpoint', help="Experiment configs")
-	parser.add_argument("--ckpt", type=str, default='', help="Experiment configs")
-	parser.add_argument("--plot_dir", type=str, default='', help="Experiment configs")
-	
+	parser.add_argument("--save_model_dir", type=str, default='', help="The model will not be saved if no directory is specified.")
+	parser.add_argument("--ckpt", type=str, default='', help="Path to the checkpoint being evaluated.")
+	parser.add_argument("--plotdir", type=str, default='', help="The features will be saved if directory is specified.")
+	parser.add_argument("--checkpoint_freq", type=int, default=300, help="Save checkpoints and update SWAD at every specified number of iterations.")
+
 	parser.add_argument("--test_envs", type=int, nargs="+", default=None)  # sketch in PACS
 	parser.add_argument("--holdout_fraction", type=float, default=0.2)
 	parser.add_argument("--model_save", default=None, type=int, help="Model save start step")
@@ -68,10 +63,7 @@ def main():
 	parser.add_argument("--debug", action="store_true", help="Run w/ debug mode")
 	parser.add_argument("--show", action="store_true", help="Show args and hparams w/o run")
 	parser.add_argument("--run_name", type=str, default=None, help="Name of save folder")
-	parser.add_argument("--pretrained", action="store_true", help="")
-	parser.add_argument("--no_swad", action="store_true", help="Not using SWAD, default is using swad")
-	parser.add_argument("--start_swad",type=float, default=0.0, help="Experiment configs")
-	
+	parser.add_argument("--start_swad", type=float, default=0.0, help="For large datasets, perform validation only after the training has converged to save time.")
 	parser.add_argument(
 		"--evalmode",
 		default="fast",
@@ -89,17 +81,6 @@ def main():
 	keys = [open(key, encoding="utf8") for key in keys]
 	hparams = Config(*keys, default=hparams)
 	hparams.argv_update(left_argv)
-	
-	if args.dataset == 'OfficeHome':
-		hparams['prototype_per_class'] = 8
-	elif args.dataset == 'DomainNet':
-		hparams['prototype_per_class'] = 4
-		args.start_swad = 0.7
-
-	if args.no_swad:
-		hparams['swad'] = None
-	# print(hparams['swad'])
-	
 
 	# setup debug
 	if args.debug:
