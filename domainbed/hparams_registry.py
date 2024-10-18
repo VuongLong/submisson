@@ -41,16 +41,14 @@ def _hparams(algorithm, dataset, random_state):
         hparams["weight_decay"] = (0.0, 10 ** random_state.uniform(-6, -2))
 
     if algorithm in ['SRA']:
-        hparams['disc_weight'] = (0.01, random_state.choice([0.01, 0.05, 0.1]))
-
-        hparams['warm_up'] = (500, random_state.choice([300, 500, 1000]))
-        hparams['maxinfo_weight'] = (0.0, random_state.choice([0.01, 0.1, 0.5]))
-
         hparams['ot_weight'] = (0.1, random_state.choice([0.01, 0.1, 0.5]))
         hparams['prototype_per_class'] = (16, random_state.choice([4, 8, 16, 32]))
-        hparams['pro_weight'] = (0.01, random_state.choice([0.01, 0.1, 0.5]))
-   
 
+        # Same as IRM, VREx
+        hparams['warm_up'] = (500, random_state.choice([300, 500, 1000]))
+    
+        # Same as DANN and CDANN
+        hparams['disc_weight'] = (0.01, random_state.choice([0.01, 0.05, 0.1]))
         hparams["mlp_width"] = (256, int(2 ** random_state.uniform(6, 10)))
         hparams["mlp_depth"] = (3, int(random_state.choice([3, 4, 5])))
         hparams["mlp_dropout"] = (0.5, random_state.choice([0.0, 0.1, 0.5]))
